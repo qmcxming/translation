@@ -3,7 +3,7 @@
 	"name": "translation",
 	"description": "HBuilderX翻译插件，集成三方翻译引擎(百度翻译、腾讯翻译、阿里翻译)。",
 	"displayName": "翻译插件",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"publisher": "青明尘下",
 	"engines": {
 		"HBuilderX": "^3.8.5"
@@ -21,7 +21,7 @@
 			"properties": {
 				"translation.aEngine": {
 					"type": "string",
-					"default": "百度翻译",
+					"default": "Baidu",
 					"description": "翻译引擎",
 					"enum": [
 						"Baidu",
