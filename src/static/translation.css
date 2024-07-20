@@ -1,0 +1,108 @@
+/* 去除默认样式 */
+textarea {
+	border: none;
+	outline: none;
+	padding: 0;
+	margin: 0;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-image: none;
+	background-color: transparent;
+	font-size: inherit;
+}
+
+textarea:focus {
+	outline: none;
+}
+
+/* 自定义样式 */
+textarea {
+	display: inline-block;
+	resize: vertical;
+	padding: 5px 15px;
+	line-height: 1.5;
+	box-sizing: border-box;
+	color: #606266;
+	background-color: #fff;
+	border: 1px solid #dcdfe6;
+	border-radius: 4px;
+	transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* 提示文字 */
+textarea::placeholder {
+	color: #c0c4cc;
+}
+
+/* 鼠标hover */
+textarea:hover {
+	border-color: #c0c4cc;
+}
+
+/* 获得焦点 */
+textarea:focus {
+	border-color: #409EFF;
+}
+
+button {
+	display: inline-block;
+	font-weight: bold;
+	line-height: 1;
+	white-space: nowrap;
+	background: #409EFF;
+	border: 1px solid #409EFF;
+	color: #fff;
+	text-align: center;
+	cursor: pointer;
+	transition: 0.3s;
+	font-size: 14px;
+	border-radius: 4px;
+	padding: 12px 20px;
+	width: 100%;
+}
+
+button:hover {
+	background: #66b1ff;
+	border-color: #66b1ff;
+}
+
+.button--plain {
+	background: #fff;
+	border-color: #dcdfe6;
+	color: #606266;
+}
+
+.button--plain:hover {
+	background: #fff;
+	border-color: #409EFF;
+	color: #409EFF;
+}
+
+/* 样式定义 toast 提示框容器 */
+#toast-container {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1000;
+}
+
+/* 样式定义单个 toast 提示框 */
+.toast {
+	background-color: #333;
+	color: #fff;
+	padding: 10px 20px;
+	margin: 5px;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	opacity: 0;
+	transform: translateY(-20px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 当 toast 显示时应用的样式 */
+.toast.show {
+	opacity: 1;
+	transform: translateY(0);
+}

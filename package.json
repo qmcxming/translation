@@ -1,0 +1,129 @@
+{
+	"id": "translation",
+	"name": "translation",
+	"description": "HBuilderX翻译插件，集成三方翻译引擎(百度翻译、腾讯翻译、阿里翻译)。",
+	"displayName": "翻译插件",
+	"version": "1.0.0",
+	"publisher": "青明尘下",
+	"engines": {
+		"HBuilderX": "^3.8.5"
+	},
+	"categories": [
+		"Other"
+	],
+	"main": "./extension",
+	"activationEvents": [
+		"onCommand:extension.translation"
+	],
+	"contributes": {
+		"configuration": {
+			"title": "Translation",
+			"properties": {
+				"translation.aEngine": {
+					"type": "string",
+					"default": "百度翻译",
+					"description": "翻译引擎",
+					"enum": [
+						"Baidu",
+						"Tencent",
+						"Alibaba"
+					],
+					"enumDescriptions": [
+						"百度翻译",
+						"腾讯翻译",
+						"阿里翻译"
+					]
+				},
+				"translation.baiduSecret": {
+					"type": "string",
+					"default": "",
+					"description": "百度翻译密钥 使用逗号隔开 例如 AppId,secretKey 申请地址看文档"
+				},
+				"translation.tencentSecret": {
+					"type": "string",
+					"default": "",
+					"description": "腾讯翻译密钥 使用逗号隔开 例如 AppId,secretKey 申请地址看文档"
+				},
+				"translation.alibabaSecret": {
+					"type": "string",
+					"default": "",
+					"description": "阿里翻译密钥 使用逗号隔开 例如 AppId,secretKey 申请地址看文档"
+				}
+			}
+		},
+		"icons": {
+			"translation": {
+				"description": "Translation Icon",
+				"default": {
+					"fontPath": "./icon.ttf",
+					"fontCharacter": "\\e6ba"
+				}
+			},
+			"baidu": {
+				"description": "Baidu Icon",
+				"default": {
+					"fontPath": "./icon.ttf",
+					"fontCharacter": "\\e77f"
+				}
+			},
+			"tencent": {
+				"description": "Tencent Icon",
+				"default": {
+					"fontPath": "./icon.ttf",
+					"fontCharacter": "\\e66f"
+				}
+			},
+			"alibaba": {
+				"description": "Alibaba Icon",
+				"default": {
+					"fontPath": "./icon.ttf",
+					"fontCharacter": "\\e66e"
+				}
+			}
+		},
+		"commands": [{
+				"command": "extension.translation",
+				"title": "翻译"
+			},
+			{
+				"command": "extension.translationDialog",
+				"title": "打开翻译对话框"
+			}
+		],
+		"menus": {
+			"editor/context": [{
+					"command": "extension.translation",
+					"group": "z_commands",
+					"when": "editorHasSelection"
+				},
+				{
+					"command": "extension.translationDialog",
+					"group": "z_commands",
+					"when": "editorTextFocus"
+				},
+				{
+					"group": "z_commands"
+				}
+			]
+		},
+		"keybindings": [{
+				"command": "extension.translation",
+				"key": "Ctrl+Shift+Y",
+				"when": "editorHasSelection",
+				"macosx": "command+Shift+Y"
+			},
+			{
+				"command": "extension.translationDialog",
+				"key": "Ctrl+Shift+O",
+				"when": "editorTextFocus",
+				"macosx": "command+Shift+O"
+			}
+		]
+	},
+	"extensionDependencies": [
+		"plugin-manager"
+	],
+	"dependencies": {
+		"axios": "^1.7.2"
+	}
+}
