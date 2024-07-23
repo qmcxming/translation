@@ -3,7 +3,7 @@
 	"name": "translation",
 	"description": "HBuilderX翻译插件，集成三方翻译引擎(百度翻译、腾讯翻译、阿里翻译)。",
 	"displayName": "翻译插件",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"publisher": "青明尘下",
 	"engines": {
 		"HBuilderX": "^3.8.5"
@@ -37,17 +37,17 @@
 				"translation.baiduSecret": {
 					"type": "string",
 					"default": "",
-					"description": "百度翻译密钥 使用逗号隔开 例如 AppId,secretKey 申请地址看文档"
+					"description": "百度翻译密钥 使用逗号隔开 例如 AppId,SecretKey 申请地址看文档"
 				},
 				"translation.tencentSecret": {
 					"type": "string",
 					"default": "",
-					"description": "腾讯翻译密钥 使用逗号隔开 例如 AppId,secretKey 申请地址看文档"
+					"description": "腾讯翻译密钥 使用逗号隔开 例如 SecretId,SecretKey 申请地址看文档"
 				},
 				"translation.alibabaSecret": {
 					"type": "string",
 					"default": "",
-					"description": "阿里翻译密钥 使用逗号隔开 例如 AppId,secretKey 申请地址看文档"
+					"description": "阿里翻译密钥 使用逗号隔开 例如 AccessKeyID,AccessKeySecret 申请地址看文档"
 				}
 			}
 		},
@@ -81,18 +81,29 @@
 				}
 			}
 		},
-		"commands": [{
+		"commands": [
+			{
 				"command": "extension.translation",
 				"title": "翻译"
 			},
 			{
 				"command": "extension.translationDialog",
 				"title": "打开翻译对话框"
+			},
+			{
+				"command": "extension.translationReplace",
+				"title": "翻译替换"
 			}
 		],
 		"menus": {
-			"editor/context": [{
+			"editor/context": [
+				{
 					"command": "extension.translation",
+					"group": "z_commands",
+					"when": "editorHasSelection"
+				},
+				{
+					"command": "extension.translationReplace",
 					"group": "z_commands",
 					"when": "editorHasSelection"
 				},
@@ -106,7 +117,8 @@
 				}
 			]
 		},
-		"keybindings": [{
+		"keybindings": [
+			{
 				"command": "extension.translation",
 				"key": "Ctrl+Shift+Y",
 				"when": "editorHasSelection",
@@ -117,6 +129,12 @@
 				"key": "Ctrl+Shift+O",
 				"when": "editorTextFocus",
 				"macosx": "command+Shift+O"
+			},
+			{
+				"command": "extension.translationReplace",
+				"key": "Ctrl+Shift+X",
+				"when": "editorTextFocus",
+				"macosx": "command+Shift+X"
 			}
 		]
 	},
@@ -124,6 +142,7 @@
 		"plugin-manager"
 	],
 	"dependencies": {
-		"axios": "^1.7.2"
+		"axios": "^1.7.2",
+		"change-case-all": "^2.1.0"
 	}
 }

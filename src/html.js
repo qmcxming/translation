@@ -37,9 +37,25 @@ function showTranslationDialog() {
 					justify-content: space-evenly;
 				}
 
-				#text, #result {
+				.textarea-box {
+					position: relative;
 					flex: 2;
+				}
+				
+				.delete-icon {
+					width: 20px;
+					height: 20px;
+					position: absolute;
+					right: -1px;
+					bottom: 2px;
+					cursor: pointer;
+				}
+				
+				.textarea {
+					/* 限制拖动大小 */
 					resize: none;
+					width: 100%;
+					height: 100%;
 				}
 
 				.feature {
@@ -55,13 +71,18 @@ function showTranslationDialog() {
 		<body>
 			<div id="container">
 				<div id="toast-container"></div>
-				<textarea name="text" id="text" cols="30" rows="10"></textarea>
+				<div class="textarea-box">
+					<textarea class="textarea" name="text" id="text" cols="30" rows="10"></textarea>
+					<img class="delete-icon" src="${staticPath}/icons/delete.svg" alt="清空" onclick="clearText()">
+				</div>
 				<div class="feature">
 						<button onclick="toTranslate()">翻译</button>
-						<img src="${staticPath}/icon.svg" alt="图标">
+						<img src="${staticPath}/icons/icon.svg" alt="图标">
 						<button class="button--plain" onclick="copy()">复制</button>
 				</div>
-				<textarea name="result" id="result" readonly cols="30" rows="10"></textarea>
+				<div class="textarea-box">
+					<textarea class="textarea" name="result" id="result" cols="30" rows="10" readonly></textarea>
+				</div>
 			</div>
 			<script src="${staticPath}/toast.js"></script>
 			  <script>
@@ -113,6 +134,13 @@ function showTranslationDialog() {
 				
 				// 判空
 				function isEmpty(str) { return !str || str.trim() === ''; }
+				
+				function clearText() {
+					const text = document.getElementById('text');
+					if (isEmpty(text.value)) return;
+					text.value = '';
+					document.getElementById('result').value = '';
+				}
 				window.addEventListener("hbuilderxReady", initReceive);
 			</script>
 		</body>

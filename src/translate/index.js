@@ -14,7 +14,7 @@ const axios = require('axios');
  * 通用错误提示
  */
 const errorTips = {
-	appIdError: '请检查应用ID(AppId)是否正确或者服务是否开通',
+	appIdError: '请检查应用ID(AppId/SecretId/AccessKeyID)是否正确或者服务是否开通',
 	secretKeyError: '密钥(SecretKey)错误'
 };
 
@@ -83,8 +83,7 @@ async function translationService(text, engine, appId, secretKey, version = 'gen
  */
 function validate(text, appId, secretKey) {
 	if (isEmpty(text)) return Promise.reject('翻译内容不能为空');
-	if (isEmpty(appId)) return Promise.reject('APP ID不能为空');
-	if (isEmpty(secretKey)) return Promise.reject('密钥不能为空');
+	if (isEmpty(appId) || isEmpty(secretKey)) return Promise.reject('密钥不能为空');
 	return Promise.resolve();
 }
 
@@ -446,5 +445,6 @@ function HMACSha1(data, key) {
 }
 
 module.exports = {
-	translationService
+	translationService,
+	detectLanguage
 }
