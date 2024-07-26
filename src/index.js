@@ -4,7 +4,7 @@ require(
 	'change-case-all');
 const { showTranslationDialog } = require('./html');
 const { translationService, detectLanguage } = require('./translate');
-const { getTranslationEngine, getSecret } = require('./settings');
+const { getTranslationEngine, getSecret, getGoogleServerUrl } = require('./settings');
 
 function translation() {
 	let editorPromise = hx.window.getActiveTextEditor();
@@ -136,12 +136,14 @@ async function getTranslationContent(text) {
 			text,
 			getTranslationEngine(),
 			appId,
-			secretKey
+			secretKey,
+			getGoogleServerUrl()
 		);
 		console.log(res);
 		hx.window.clearStatusBarMessage();
 		return res.dst;
 	} catch (e) {
+		console.log(e);
 		hx.window.setStatusBarMessage(e, 3000, 'error');
 	}
 }

@@ -1,7 +1,7 @@
 const hx = require("hbuilderx");
 const path = require('path');
 const { translationService } = require('./translate');
-const { getTranslationEngine, getSecret } = require('./settings');
+const { getTranslationEngine, getSecret, getGoogleServerUrl } = require('./settings');
 
 const staticPath = path.join(__dirname, 'static');
 
@@ -154,7 +154,8 @@ function showTranslationDialog() {
 				msg.data,
 				translationEngine,
 				appId,
-				secretKey
+				secretKey,
+				getGoogleServerUrl()
 			).then(res => {
 				webview.postMessage({ data: res });
 			}).catch(e => {

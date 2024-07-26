@@ -31,8 +31,14 @@ function getSecret() {
 	};
 }
 
+function getGoogleServerUrl() {
+	const engine = getTranslationEngine().toLocaleLowerCase();
+	return getTranslationConfig(engine + 'Secret');
+}
+
 module.exports = {
 	getTranslationConfig,
 	getTranslationEngine,
-	getSecret
+	getSecret,
+	getGoogleServerUrl
 }

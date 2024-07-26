@@ -3,7 +3,7 @@
 	"name": "translation",
 	"description": "HBuilderX翻译插件，集成三方翻译引擎(百度翻译、腾讯翻译、阿里翻译)。",
 	"displayName": "翻译插件",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"publisher": "青明尘下",
 	"engines": {
 		"HBuilderX": "^3.8.5"
@@ -26,28 +26,35 @@
 					"enum": [
 						"Baidu",
 						"Tencent",
-						"Alibaba"
+						"Alibaba",
+						"Google"
 					],
 					"enumDescriptions": [
 						"百度翻译",
 						"腾讯翻译",
-						"阿里翻译"
+						"阿里翻译",
+						"谷歌翻译"
 					]
 				},
 				"translation.baiduSecret": {
 					"type": "string",
 					"default": "",
-					"description": "百度翻译密钥 使用逗号隔开 例如 AppId,SecretKey 申请地址看文档"
+					"description": "百度翻译密钥 使用逗号隔开 例如 AppId,SecretKey <a style=\"color: '#3574F0'\" href=\"https://api.fanyi.baidu.com/product/11\">申请地址</a>"
 				},
 				"translation.tencentSecret": {
 					"type": "string",
 					"default": "",
-					"description": "腾讯翻译密钥 使用逗号隔开 例如 SecretId,SecretKey 申请地址看文档"
+					"description": "腾讯翻译密钥 使用逗号隔开 例如 SecretId,SecretKey <a style=\"color: '#3574F0'\" href=\"https://cloud.tencent.com/product/tmt\">申请地址</a>"
 				},
 				"translation.alibabaSecret": {
 					"type": "string",
 					"default": "",
-					"description": "阿里翻译密钥 使用逗号隔开 例如 AccessKeyID,AccessKeySecret 申请地址看文档"
+					"description": "阿里翻译密钥 使用逗号隔开 例如 AccessKeyID,AccessKeySecret <a style=\"color: '#3574F0'\" href=\"https://www.aliyun.com/product/ai/base_alimt?source=5176.11533457&userCode=wsnup3vv\">申请地址</a>"
+				},
+				"translation.googleSecret": {
+					"type": "string",
+					"default": "",
+					"description": "谷歌翻译 服务器配置 例如 https://translate.google.com"
 				}
 			}
 		},
@@ -78,6 +85,13 @@
 				"default": {
 					"fontPath": "./icon.ttf",
 					"fontCharacter": "\\e66e"
+				}
+			},
+			"google": {
+				"description": "Google Icon",
+				"default": {
+					"fontPath": "./icon.ttf",
+					"fontCharacter": "\\eb26"
 				}
 			}
 		},
@@ -143,6 +157,7 @@
 	],
 	"dependencies": {
 		"axios": "^1.7.2",
-		"change-case-all": "^2.1.0"
+		"change-case-all": "^2.1.0",
+		"qs": "^6.12.3"
 	}
 }

@@ -2,7 +2,11 @@
 
 # 翻译插件
 
-> HBuilderX的翻译插件
+> HBuilderX的翻译插件，中英互译。
+
+## 插件市场
+
+[翻译插件 - DCloud 插件市场](https://ext.dcloud.net.cn/plugin?id=19421)
 
 ## 配置说明
 
@@ -10,8 +14,9 @@
 - [百度翻译](https://api.fanyi.baidu.com/product/11)
 - [腾讯翻译](https://cloud.tencent.com/product/tmt)
 - [阿里翻译](https://www.aliyun.com/product/ai/base_alimt?source=5176.11533457&userCode=wsnup3vv)
+- 谷歌翻译( v1.2.0新增 )：只需配置代理服务器地址即可 [谷歌翻译镜像站合集 - 腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/news/1478660)
 
-![pkTnXB4.png](https://s21.ax1x.com/2024/07/19/pkTnXB4.png)
+![pkTnXB4.png](https://s21.ax1x.com/2024/07/26/pkbjHnP.png)
 
 ## 使用说明
 
@@ -53,3 +58,9 @@
 - 也可以直接使用鼠标单击对应的条目
 
 ![](https://s21.ax1x.com/2024/07/23/pkHZJ1K.png)
+
+## 赞赏
+
+如果您觉得本插件帮助了您，请小小的赞赏一下，或者给一个五星好评，鼓励一下🤣。
+
+![赞赏](https://raw.githubusercontent.com/qmcx-ming/static/master/pay.png)
