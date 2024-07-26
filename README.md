@@ -63,4 +63,4 @@
 
 如果您觉得本插件帮助了您，请小小的赞赏一下，或者给一个五星好评，鼓励一下🤣。
 
-![赞赏](https://raw.githubusercontent.com/qmcx-ming/static/master/pay.png)
+![赞赏](https://qmcx-ming.github.io/static/pay.png)
