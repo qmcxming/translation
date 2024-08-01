@@ -1,5 +1,4 @@
-const crypto = require('crypto');
-const { getLanguagePair, send, errorTips, translationEngines } = require('../request');
+const { getLanguagePair, send } = require('../request');
 const { getValue } = require('./tk');
 
 /**
@@ -54,10 +53,16 @@ async function googleTranslationService(text, url) {
 		}
 	).catch(e => Promise.reject('网络连接超时，请检查代理服务器地址是否可用'));
 	console.log(res);
+	const result = res[0].reduce((acc, item) => {
+		if (item[0]) {
+			acc += item[0];
+		}
+		return acc;
+	}, '');
 	return {
 		from: from,
 		to: to,
-		dst: res[0][0][0],
+		dst: result,
 		src: text
 	}
 }

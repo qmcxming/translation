@@ -80,6 +80,7 @@ function showTranslationDialog() {
 					position: absolute;
 					border: 1px solid #efefef;
 					box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+					background-color: #FFFFFF;
 					/* padding: 15px; */
 					border-radius: 5px;
 					width: 50px;
