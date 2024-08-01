@@ -1,6 +1,6 @@
 const hx = require("hbuilderx");
 const path = require('path');
-const { translationService } = require('./translate');
+const { translationService, getLanguagePair } = require('./translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl } = require('./settings');
 
 const staticPath = path.join(__dirname, 'static');
@@ -65,6 +65,57 @@ function showTranslationDialog() {
 					justify-content: space-between;
 					padding: 0 10px;
 				}
+				.more {
+					position: absolute;
+					right: 0;
+					bottom: 0;
+					width: 30px;
+					height: 30px;
+					text-align: center;
+					font-size: 10px;
+					padding: 0;
+				}
+			
+				.popup {
+					position: absolute;
+					border: 1px solid #efefef;
+					box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+					/* padding: 15px; */
+					border-radius: 5px;
+					width: 50px;
+					text-align: center;
+					opacity: 0;
+					transform: translateY(20px);
+					transition: opacity 0.3s ease, transform 0.3s ease;
+					bottom: 40px;
+					right: 0px;
+				}
+			
+				.popup.visible {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			
+				.hidden {
+					display: none;
+				}
+			
+				.popup-item {
+					margin: 5px 0;
+					padding: 5px;
+					cursor: pointer;
+					color: #1f2f3d;
+					border-bottom: 1px solid #efefef;
+				}
+			
+				.popup-item:last-child {
+					border-bottom: none;
+				}
+			
+				.popup .popup-item:hover {
+					background-color: #ECF5FF;
+					color: #409EFF;
+				}
 			</style>
 		</head>
 		
@@ -82,10 +133,16 @@ function showTranslationDialog() {
 				</div>
 				<div class="textarea-box">
 					<textarea class="textarea" name="result" id="result" cols="30" rows="10" readonly></textarea>
+					<button id="more" class="more button--plain">更多</button>
+					<div id="popup" class="popup hidden">
+						<div class="popup-item" onclick="openLink('baidu')">百度</div>
+						<div class="popup-item" onclick="openLink('google')">谷歌</div>
+						<div class="popup-item" onclick="openLink('youdao')">有道</div>
+					</div>
 				</div>
 			</div>
 			<script src="${staticPath}/toast.js"></script>
-			  <script>
+			<script>
 				function initReceive() {
 					// 接收消息
 					hbuilderx.onDidReceiveMessage((res) => {
@@ -142,6 +199,52 @@ function showTranslationDialog() {
 					document.getElementById('result').value = '';
 				}
 				window.addEventListener("hbuilderxReady", initReceive);
+				
+				// 气泡框显示隐藏
+				document.addEventListener("DOMContentLoaded", function () {
+					const button = document.getElementById("more");
+					const popup = document.getElementById("popup");
+			
+					button.addEventListener("click", function () {
+						if (popup.classList.contains("hidden")) {
+							popup.classList.remove("hidden");
+							setTimeout(() => {
+								popup.classList.add("visible");
+							}, 10);
+						} else {
+							popup.classList.remove("visible");
+							setTimeout(() => {
+								popup.classList.add("hidden");
+							}, 300);
+						}
+					});
+			
+					document.addEventListener("click", function (event) {
+						if (!popup.contains(event.target) && event.target !== button) {
+							hiddenPopup(popup);
+						}
+					});
+				});
+				
+				function hiddenPopup(popup) {
+					popup = popup ? popup : document.getElementById("popup");
+					popup.classList.remove("visible");
+					setTimeout(() => {
+						popup.classList.add("hidden");
+					}, 300);
+				}
+			
+				function openLink(engine) {
+					const text = document.getElementById("text").value;
+					if (isEmpty(text)) {
+						showToast('请先输入翻译内容');
+						return;
+					}
+					// 发送webview消息
+					hbuilderx.postMessage({ command: "openLink", engine: engine, text: text });
+					hiddenPopup();
+					console.log(engine);
+				}
 			</script>
 		</body>
 		
@@ -162,12 +265,35 @@ function showTranslationDialog() {
 				webview.postMessage({ error: e });
 			});
 		}
+		if (msg.command === 'openLink') {
+			openLink(msg.engine, msg.text);
+		}
 	});
 
 	let promi = webviewDialog.show();
 	promi.then(function(data) {
 		// 处理错误信息
 	});
+}
+
+function openLink(engine, text) {
+	let url = 'https://translate.google.com';
+	const { from, to } = getLanguagePair(text);
+	switch(engine) {
+		case 'baidu':
+			url = `https://fanyi.baidu.com/mtpe-individual/multimodal?query=${text}&lang=${from}2${to}`;
+			break;
+		case 'google':
+			const g = getGoogleServerUrl(engine);
+			// 本地配置代理地址，则使用代理地址，否则，使用原地址
+			url = (g ? g : url) + `?sl=${from}&tl=${to}&text=${text}&op=translate`;
+			break;
+		case 'youdao':
+			url = `https://www.youdao.com/result?word=${text}&lang=en`;
+			break;
+	}
+	console.log(url);
+	hx.env.openExternal(url);
 }
 
 module.exports = {

@@ -31,8 +31,11 @@ function getSecret() {
 	};
 }
 
-function getGoogleServerUrl() {
-	const engine = getTranslationEngine().toLocaleLowerCase();
+/**
+ * 获取Google服务器地址
+ * @param {string} [engine=getTranslationEngine().toLocaleLowerCase()] 翻译引擎
+ */
+function getGoogleServerUrl(engine = getTranslationEngine().toLocaleLowerCase()) {
 	return getTranslationConfig(engine + 'Secret');
 }
 

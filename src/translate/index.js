@@ -4,7 +4,7 @@ const baiduTranslationService = require('./baidu');
 const googleTranslationService = require('./google');
 const tencentTranslationService = require('./tencent');
 const alibabaTranslationService = require('./alibaba');
-const { translationEngines, detectLanguage } = require('./request');
+const { translationEngines, detectLanguage, getLanguagePair } = require('./request');
 
 /**
  * 一个简单的翻译api集成[百度翻译、腾讯翻译、阿里翻译]
@@ -73,5 +73,6 @@ function isEmpty(str) {
 
 module.exports = {
 	translationService,
-	detectLanguage
+	detectLanguage,
+	getLanguagePair
 }
