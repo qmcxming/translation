@@ -36,7 +36,7 @@ async function translationService(text, engine, appId, secretKey, url = translat
 		case 'tencent':
 			return tencentTranslationService(text, appId, secretKey);
 		case 'alibaba':
-			return alibabaTranslationService(text, appId, secretKey);
+			return alibabaTranslationService(text, appId, secretKey, version, scene);
 		case 'google':
 			return googleTranslationService(text, url);
 	}

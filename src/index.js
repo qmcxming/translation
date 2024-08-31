@@ -4,11 +4,10 @@ require(
 	'change-case-all');
 const { showTranslationDialog } = require('./html');
 const { translationService, detectLanguage } = require('./translate');
-const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime } = require('./settings');
+const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime, getAlibabaVS } = require('./settings');
 
 function translation() {
 	let editorPromise = hx.window.getActiveTextEditor();
-	console.log(getHideTime());
 	editorPromise.then(async editor => {
 		// 获取文本
 		const text = editor.document.getText(editor.selection);
@@ -130,7 +129,7 @@ function showTranslationReplace() {
  */
 async function getTranslationContent(text) {
 	const { appId, secretKey } = getSecret();
-	console.log(text);
+	const { version, scene } = getAlibabaVS();
 	hx.window.setStatusBarMessage('正在翻译中...');
 	try {
 		const res = await translationService(
@@ -138,7 +137,9 @@ async function getTranslationContent(text) {
 			getTranslationEngine(),
 			appId,
 			secretKey,
-			getGoogleServerUrl()
+			getGoogleServerUrl(),
+			version,
+			scene
 		);
 		console.log(res);
 		hx.window.clearStatusBarMessage();

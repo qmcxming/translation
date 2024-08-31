@@ -1,7 +1,7 @@
 const hx = require("hbuilderx");
 const path = require('path');
 const { translationService, getLanguagePair } = require('./translate');
-const { getTranslationEngine, getSecret, getGoogleServerUrl } = require('./settings');
+const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('./settings');
 
 const staticPath = path.join(__dirname, 'static');
 
@@ -23,10 +23,15 @@ function showTranslationDialog() {
 			}, 500);
 		}
 	})
+	let te;
+	if (translationEngine === 'Alibaba') {
+		const { version } = getAlibabaVS();
+		te = `${translationEngine}(${version === 'general' ? '通用版' : '专业版'})`;
+	}
 	const webviewDialog = hx.window.createWebViewDialog({
 		modal: false,
 		title: '<span style="color: #409EFF;font-weight: bold;">翻译</span>',
-		description: translationEngine,
+		description: te ? te : translationEngine,
 		size: {
 			width: 630,
 			height: 400

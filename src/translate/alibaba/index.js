@@ -24,11 +24,11 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 		// 通用版默认是：general
 		// 专业版默认是：title
 		// TODO 后续新增 翻译版本选择 和 翻译场景选择，再进行修改
-		Scene: 'general'
+		Scene: scene
 	};
 
 	//  通用版
-	const url = translationEngines['alibaba']['general'];
+	const url = translationEngines['alibaba'][version];
 	// 专业版 http://mt.cn-hangzhou.aliyuncs.com/api/translate/web/ecommerce 并且设置 Scene: 'title'
 
 	const realUrl = new URL(url);
@@ -43,11 +43,11 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 
 	// 将请求体进行MD5加密和Base64编码
 	const bodyMd5 = MD5Base64Encode(JSON.stringify(data));
-	console.log("1.加密后的请求体：", bodyMd5);
+	// console.log("1.加密后的请求体：", bodyMd5);
 
 	// 生成唯一随机值
 	const uuid = crypto.randomUUID();
-	console.log("2.唯一随机值：", uuid);
+	// console.log("2.唯一随机值：", uuid);
 
 	// 请求头SHA-1加密
 	const arr = [method, accept, bodyMd5, content_type, date, "x-acs-signature-method:HMAC-SHA1",
@@ -57,7 +57,7 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 
 	// 2. 计算 HMAC-SHA1
 	const signature = HMACSha1(stringToSign, secretKey);
-	console.log("4.计算后的HMAC-SHA1：", signature);
+	// console.log("4.计算后的HMAC-SHA1：", signature);
 
 	// 3. 获得最终的Authorization
 	const authHeader = "acs " + appId + ":" + signature;
@@ -89,7 +89,6 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 			case 'SignatureDoesNotMatch':
 				return Promise.reject(errorTips['secretKeyError']);
 		}
-		console.log('alibaba: ', e.response.data.Code);
 	}
 }
 

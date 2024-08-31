@@ -74,6 +74,40 @@
 						"60秒",
 						"永不隐藏"
 					]
+				},
+				"translation.z1alibabaVersion": {
+					"type": "string",
+					"default": "general",
+					"description": "阿里翻译版本",
+					"enum": [
+						"general",
+						"ecommerce"
+					],
+					"enumDescriptions": [
+						"通用版本",
+						"专业版本"
+					]
+				},
+				"translation.z2alibabaProScene": {
+					"type": "string",
+					"default": "title",
+					"description": "阿里翻译专业版场景",
+					"enum": [
+						"title",
+						"description",
+						"communication",
+						"medical",
+						"social",
+						"finance"
+					],
+					"enumDescriptions": [
+						"商品标题",
+						"商品描述",
+						"商品沟通",
+						"医疗",
+						"社交",
+						"金融"
+					]
 				}
 			}
 		},

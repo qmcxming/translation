@@ -47,10 +47,28 @@ function getHideTime() {
 	return time > 0 ? time * 1000 : null;
 }
 
+/**
+ * 获取Alibaba翻译的版本和场景
+ */
+function getAlibabaVS() {
+	if (getTranslationEngine() !== 'Alibaba') {
+		return { version: 'general', scene: 'general' };
+	}
+	const version = translationConfig.get('z1alibabaVersion');
+	return version === 'general' ? {
+		version,
+		scene: 'general'
+	} : {
+		version,
+		scene: translationConfig.get('z2alibabaProScene')
+	};
+}
+
 module.exports = {
 	getTranslationConfig,
 	getTranslationEngine,
 	getSecret,
 	getGoogleServerUrl,
-	getHideTime
+	getHideTime,
+	getAlibabaVS
 }
