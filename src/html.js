@@ -10,6 +10,19 @@ const staticPath = path.join(__dirname, 'static');
  */
 function showTranslationDialog() {
 	const translationEngine = getTranslationEngine();
+	const editorPromise = hx.window.getActiveTextEditor();
+	editorPromise.then(editor => {
+		const selection = editor.selection;
+		// 获取文本
+		const text = editor.document.getText(selection);
+		// 有选中文本时，再去发送消息给webview
+		if (text.trim() !== '') {
+			// 使用定时器解决webview页面载入无法接收问题
+			setTimeout(() => {
+				webview.postMessage({ content: text });
+			}, 500);
+		}
+	})
 	const webviewDialog = hx.window.createWebViewDialog({
 		modal: false,
 		title: '<span style="color: #409EFF;font-weight: bold;">翻译</span>',
@@ -124,7 +137,7 @@ function showTranslationDialog() {
 			<div id="container">
 				<div id="toast-container"></div>
 				<div class="textarea-box">
-					<textarea class="textarea" name="text" id="text" cols="30" rows="10"></textarea>
+					<textarea autofocus class="textarea" name="text" id="text" cols="30" rows="10"></textarea>
 					<img class="delete-icon" src="${staticPath}/icons/delete.svg" alt="清空" onclick="clearText()">
 				</div>
 				<div class="feature">
@@ -148,7 +161,12 @@ function showTranslationDialog() {
 					// 接收消息
 					hbuilderx.onDidReceiveMessage((res) => {
 						console.log(res);
-						const { data, error } = res;
+						const { data, error, content } = res;
+						if (content) {
+							document.getElementById('text').value = content;
+							toTranslate();
+							return;
+						}
 						if (error) {
 							document.getElementById('result').value = '';
 							return showToast(error);
@@ -293,7 +311,6 @@ function openLink(engine, text) {
 			url = `https://www.youdao.com/result?word=${text}&lang=en`;
 			break;
 	}
-	console.log(url);
 	hx.env.openExternal(url);
 }
 

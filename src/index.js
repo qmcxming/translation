@@ -4,16 +4,17 @@ require(
 	'change-case-all');
 const { showTranslationDialog } = require('./html');
 const { translationService, detectLanguage } = require('./translate');
-const { getTranslationEngine, getSecret, getGoogleServerUrl } = require('./settings');
+const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime } = require('./settings');
 
 function translation() {
 	let editorPromise = hx.window.getActiveTextEditor();
+	console.log(getHideTime());
 	editorPromise.then(async editor => {
 		// 获取文本
 		const text = editor.document.getText(editor.selection);
 		hx.window.setStatusBarMessage('正在翻译中...');
 		const dst = await getTranslationContent(text);
-		if (dst) hx.window.setStatusBarMessage(dst, 3000);
+		if (dst) hx.window.setStatusBarMessage(dst, getHideTime());
 	});
 }
 

@@ -39,9 +39,18 @@ function getGoogleServerUrl(engine = getTranslationEngine().toLocaleLowerCase())
 	return getTranslationConfig(engine + 'Secret');
 }
 
+/**
+ * 获取翻译结果自动隐藏时间
+ */
+function getHideTime() {
+	const time = getTranslationConfig('time');
+	return time > 0 ? time * 1000 : null;
+}
+
 module.exports = {
 	getTranslationConfig,
 	getTranslationEngine,
 	getSecret,
-	getGoogleServerUrl
+	getGoogleServerUrl,
+	getHideTime
 }
