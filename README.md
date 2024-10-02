@@ -14,7 +14,7 @@
 - [百度翻译](https://api.fanyi.baidu.com/product/11)
 - [腾讯翻译](https://cloud.tencent.com/product/tmt)
 - [阿里翻译](https://www.aliyun.com/product/ai/base_alimt?source=5176.11533457&userCode=wsnup3vv)
-- 谷歌翻译( v1.2.0新增 )：只需配置代理服务器地址即可 [谷歌翻译镜像站合集 - 腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/news/1478660)
+- 谷歌翻译( v1.2.0新增 )：只需配置代理服务器地址即可 [谷歌翻译镜像站合集](https://cloud.tencent.com/developer/news/1478660)
 
 ![pkTnXB4.png](https://s21.ax1x.com/2024/07/26/pkbjHnP.png)
 

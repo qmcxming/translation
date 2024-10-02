@@ -3,7 +3,7 @@
 	"name": "translation",
 	"description": "HBuilderX翻译插件，集成多个翻译引擎(百度翻译、腾讯翻译、阿里翻译、谷歌翻译)。",
 	"displayName": "翻译插件",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"publisher": "青明尘下",
 	"engines": {
 		"HBuilderX": "^3.8.5"

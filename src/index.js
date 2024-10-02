@@ -93,14 +93,40 @@ const template = [{
 ]
 
 /**
+ * 获取选中的文本和当前光标选中的位置
+ */
+async function getSelectedText() {
+	const editor = await hx.window.getActiveTextEditor();
+	const text = editor?.document?.getText(editor.selection) || '';
+	const selection = editor?.selection;
+	return { text, selection };
+}
+
+/**
  * 显示翻译替换搜索建议列表
  */
 function showTranslationReplace() {
 	const editorPromise = hx.window.getActiveTextEditor();
 	editorPromise.then(async editor => {
-		const selection = editor.selection;
+		let selection = editor.selection;
 		// 获取文本
 		let text = editor.document.getText(selection);
+		// 未选中文本
+		if (isEmpty(text)) {
+			// 选当前词或下一个相同词：经过测试，只支持英文，中文不支持啊
+			hx.commands.executeCommand('editor.action.addSelectionToNextFindMatch');
+			const res1 = await getSelectedText();
+			text = res1.text;
+			selection = res1.selection;
+			// 针对中文选词处理
+			if (isEmpty(text)) {
+				// 选择到软行尾
+				await hx.commands.executeCommand('cursorEndSelect');
+				const res2 = await getSelectedText();
+				text = res2.text;
+				selection = res2.selection;
+			}
+		}
 		if (detectLanguage(text)) { // 中文 -> 翻译 -> 转换
 			text = await getTranslationContent(text);
 		}
@@ -119,9 +145,13 @@ function showTranslationReplace() {
 			editor.edit(editBuilder => {
 				editBuilder.replace(selection, result.description);
 			});
+			// 光标向右一词：替换完成后，光标移动到替换后单词的词尾
+			hx.commands.executeCommand('cursorWordEndRight');
 		})
 	})
 }
+
+function isEmpty(str) { return !str || str.trim() === ''; }
 
 /**
  * 获取翻译内容
