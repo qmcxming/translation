@@ -3,10 +3,22 @@
 # 翻译插件
 
 > HBuilderX的翻译插件，中英互译。
+>
+> 说明：目前插件市场开启了看广告下载模式，如果不想看广告的花，可以在GitHub上的releases下载 [translation-plugin.zip](https://github.com/qmcx-ming/translation/releases)，使用[离线安装插件](https://hx.dcloud.net.cn/Tutorial/PluginsInstall?id=offlineinstall)
+>
+> 离线安装插件注意事项：
+>
+> 1. 解压时，最好选择 **提取到 `translation-plugin/`位置**或者 **全部解压缩**，切记。
+> 2. 解压后，如果插件内没有`node_modules`，需要手动执行`npm install`。
+> 3. 后面我可能会加一个 `translation-plugin-n.zip`的包，他会包含`node_modules`，意味着你无需手动执行`npm install`了。
 
 ## 插件市场
 
 [翻译插件 - DCloud 插件市场](https://ext.dcloud.net.cn/plugin?id=19421)
+
+## GitHub
+
+[HBuilderX的翻译插件](https://github.com/qmcx-ming/translation)
 
 ## 配置说明
 
