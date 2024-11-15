@@ -3,7 +3,7 @@ const { camelCase, pascalCase, snakeCase, constantCase, kebabCase, sentenceCase,
 require(
 	'change-case-all');
 const { showTranslationDialog } = require('./html');
-const { translationService, detectLanguage } = require('./translate');
+const { translationService, detectLanguage, getLanguagePair } = require('./translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime, getAlibabaVS } = require('./settings');
 
 function translation() {
@@ -160,6 +160,7 @@ function isEmpty(str) { return !str || str.trim() === ''; }
 async function getTranslationContent(text) {
 	const { appId, secretKey } = getSecret();
 	const { version, scene } = getAlibabaVS();
+	const { from, to } = getLanguagePair(text);
 	hx.window.setStatusBarMessage('正在翻译中...');
 	try {
 		const res = await translationService(
@@ -167,6 +168,8 @@ async function getTranslationContent(text) {
 			getTranslationEngine(),
 			appId,
 			secretKey,
+			from,
+			to,
 			getGoogleServerUrl(),
 			version,
 			scene

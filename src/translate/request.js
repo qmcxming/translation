@@ -17,7 +17,7 @@ const translationEngines = {
 	tencent: 'https://tmt.tencentcloudapi.com',
 	alibaba: {
 		// 通用版本
-		general: 'http://mt.cn-hangzhou.aliyuncs.com/api/translate/web/general',
+		general: 'https://mt.aliyuncs.com/api/translate/web/general',
 		// 专业版本
 		ecommerce: 'http://mt.cn-hangzhou.aliyuncs.com/api/translate/web/ecommerce'
 	},

@@ -6,9 +6,11 @@ const { getLanguagePair, send, errorTips, translationEngines } = require('../req
  * @param {String} text 文本
  * @param {String} appId APP ID
  * @param {String} secretKey 密钥
+ * @param {String} from 源语言
+ * @param {String} to 目标语言
  */
-async function tencentTranslationService(text, appId, secretKey) {
-	const { from, to } = getLanguagePair(text);
+async function tencentTranslationService(text, appId, secretKey, from, to) {
+	// const { from, to } = getLanguagePair(text);
 	const data = {
 		SourceText: text,
 		Source: from,

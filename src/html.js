@@ -18,8 +18,9 @@ function showTranslationDialog() {
 		// 有选中文本时，再去发送消息给webview
 		if (text.trim() !== '') {
 			// 使用定时器解决webview页面载入无法接收问题
+			const { from, to } = getLanguagePair(text);
 			setTimeout(() => {
-				webview.postMessage({ content: text });
+				webview.postMessage({ content: text, from: from, to: to });
 			}, 500);
 		}
 	})
@@ -34,7 +35,7 @@ function showTranslationDialog() {
 		description: te ? te : translationEngine,
 		size: {
 			width: 630,
-			height: 400
+			height: 450
 		}
 	}, {
 		enableScripts: true
@@ -49,6 +50,7 @@ function showTranslationDialog() {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<title>翻译</title>
 			<link rel="stylesheet" href="${staticPath}/translation.css">
+			<link rel="stylesheet" href="${staticPath}/select.css">
 			<style>
 				#container {
 					display: flex;
@@ -135,10 +137,46 @@ function showTranslationDialog() {
 					background-color: #ECF5FF;
 					color: #409EFF;
 				}
+				
+				.select-container {
+					display: flex;
+					justify-content: space-between;
+				}
+				
+				.custom-select {
+					flex: 2;
+					display: flex;
+				}
+				
+				.select-box {
+					flex: 1;
+					padding: 0 15px;
+					display: flex;
+					justify-content: center;
+				}
+				
+				.exchange-icon {
+					width: 20px;
+				}
 			</style>
 		</head>
 		
 		<body>
+			<div class="select-container">
+				<div class="custom-select" id="fromSelect">
+					<div id="selectedLabel1">请选择</div>
+					<div class="arrow"></div> <!-- 箭头 -->
+				<div class="dropdown" id="dropdown1"></div>
+				</div>
+				<div class="select-box">
+					<img onclick="exchange()" class="exchange-icon" src="${staticPath}/icons/exchange.svg" alt="交换">
+				</div>
+				<div class="custom-select" id="toSelect">
+					<div id="selectedLabel2">请选择</div>
+					<div class="arrow"></div> <!-- 箭头 -->
+					<div class="dropdown" id="dropdown2"></div>
+				</div>
+			</div>
 			<div id="container">
 				<div id="toast-container"></div>
 				<div class="textarea-box">
@@ -161,15 +199,23 @@ function showTranslationDialog() {
 				</div>
 			</div>
 			<script src="${staticPath}/toast.js"></script>
+			<script src="${staticPath}/select.js"></script>
+			<script src="${staticPath}/languages/${translationEngine}-language.json"></script>
 			<script>
+				const options = languageList;
+				console.log(languageList);
 				function initReceive() {
 					// 接收消息
 					hbuilderx.onDidReceiveMessage((res) => {
 						console.log(res);
-						const { data, error, content } = res;
+						const { data, error, content, from, to } = res;
 						if (content) {
 							document.getElementById('text').value = content;
-							toTranslate();
+							
+							setSelectOption(from, to).then(() => {
+								console.log('选中完成，执行下面的代码');
+								toTranslate();
+							});
 							return;
 						}
 						if (error) {
@@ -179,16 +225,51 @@ function showTranslationDialog() {
 						document.getElementById('result').value = data.dst;
 					});
 				}
+				
+				async function setSelectOption(from, to) {
+					const dropdown1 = document.getElementById('dropdown1');
+					const selectOptions1 = dropdown1.getElementsByClassName('option');
+					const selectedLabel1 = document.getElementById('selectedLabel1');
+					setSelected(selectOptions1, dropdown1, selectedLabel1, from);
+					
+					const dropdown2 = document.getElementById('dropdown2');
+					const selectOptions2 = dropdown2.getElementsByClassName('option');
+					const selectedLabel2 = document.getElementById('selectedLabel2');
+					setSelected(selectOptions2, dropdown2, selectedLabel2, to);
+					await new Promise(resolve => setTimeout(resolve, 0)); // 确保每个操作按顺序完成
+				}
+				
+				function setSelected(selectOptions, dropdown, selectedLabel, check) {
+					for (let i = 0; i < selectOptions.length; i++) {
+						const option = selectOptions[i];
+						console.log('麻蛋', option.dataset.value);
+						if (check === option.dataset.value) {
+							console.log('选中');
+							// 高亮显示被选中的选项
+							const selectedOption = dropdown.querySelector('.option.selected');
+							if (selectedOption) {
+								selectedOption.classList.remove('selected'); // 移除之前的选中状态
+							}
+							selectedLabel.textContent = option.innerHTML;
+							selectedLabel.setAttribute('data-value', option.dataset.value); // 设置data-value
+							option.classList.add('selected');
+						}
+					}
+				}
+
 			
 				function toTranslate() {
 					const text = document.getElementById('text').value;
+					const from = document.getElementById('selectedLabel1').getAttribute('data-value');
+					const to = document.getElementById('selectedLabel2').getAttribute('data-value');
+					console.log(from, to);
 					if (isEmpty(text)) {
 						showToast('请输入要翻译的内容');
 						return;
 					};
 					document.getElementById('result').value = '正在翻译中...';
 					// 发送消息
-					hbuilderx.postMessage({ command: 'translation', data: text });
+					hbuilderx.postMessage({ command: 'translation', data: text, from: from, to: to });
 					console.log(text);
 				}
 				
@@ -269,6 +350,56 @@ function showTranslationDialog() {
 					hiddenPopup();
 					console.log(engine);
 				}
+				
+				
+				function createCustomSelect(selectId, labelId, dropdownId, defaultValue, filterFirstOption = false) {
+					const customSelect = document.getElementById(selectId);
+					const dropdown = document.getElementById(dropdownId);
+					const selectedLabel = document.getElementById(labelId);
+				
+					// 动态生成选项
+					options.forEach((option, index) => {
+						if (filterFirstOption && index === 0) return; // 过滤掉第一个选项
+						const div = document.createElement('div');
+						div.className = 'option';
+						div.textContent = option.name;
+						div.setAttribute('data-value', option.code);
+						// 设置默认值
+						if (option.code === defaultValue) {
+							selectedLabel.textContent = option.name;
+							selectedLabel.setAttribute('data-value', option.code); // 设置data-value
+							div.classList.add('selected');
+						}
+						dropdown.appendChild(div);
+					});
+				
+					customSelect.onclick = function(e) {
+						e.stopPropagation(); // 阻止事件冒泡
+						const isOpen = dropdown.classList.toggle('show'); // 切换显示状态
+						customSelect.classList.toggle('open', isOpen); // 添加或移除打开类
+					};
+				
+					dropdown.onclick = function(e) {
+						if (e.target.classList.contains('option')) {
+							e.stopPropagation(); // 阻止事件冒泡
+							selectedLabel.textContent = e.target.textContent;
+							selectedLabel.setAttribute('data-value', e.target.getAttribute('data-value')); // 更新data-value
+				
+							// 高亮显示被选中的选项
+							const selectedOption = dropdown.querySelector('.option.selected');
+							if (selectedOption) {
+								selectedOption.classList.remove('selected'); // 移除之前的选中状态
+							}
+							e.target.classList.add('selected'); // 添加选中状态
+				
+							dropdown.classList.remove('show'); // 隐藏下拉框
+							customSelect.classList.remove('open'); // 移除打开类
+						}
+					};
+				}
+				
+				createCustomSelect('fromSelect', 'selectedLabel1', 'dropdown1', 'auto');
+				createCustomSelect('toSelect', 'selectedLabel2', 'dropdown2', 'zh', true);
 			</script>
 		</body>
 		
@@ -282,6 +413,8 @@ function showTranslationDialog() {
 				translationEngine,
 				appId,
 				secretKey,
+				msg.from,
+				msg.to,
 				getGoogleServerUrl()
 			).then(res => {
 				webview.postMessage({ data: res });

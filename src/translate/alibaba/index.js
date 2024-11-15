@@ -7,11 +7,13 @@ const { getLanguagePair, send, errorTips, translationEngines } = require('../req
  * @param {String} secretKey 密钥
  * @param {('general'|'ecommerce')} [version='general'] 翻译版本(通用版和专业版, 默认general)
  * @param {string} [scene='general'] 翻译场景(通用版: general 专业版: title、description、communication、medical、social、finance)
+ * @param {String} from 源语言
+ * @param {String} to 目标语言
  * @link https://help.aliyun.com/zh/machine-translation/developer-reference/api-alimt-2018-10-12-translate?spm=a2c4g.11186623.0.0.6ad24f6fmuQm0q - 专业版
  * @link https://help.aliyun.com/zh/machine-translation/developer-reference/api-alimt-2018-10-12-translategeneral?spm=a2c4g.11186623.0.0.546b6678QMR17g - 通用版
  */
-async function alibabaTranslationService(text, appId, secretKey, version = 'general', scene = 'general') {
-	const { from, to } = getLanguagePair(text);
+async function alibabaTranslationService(text, appId, secretKey, version = 'general', scene = 'general', from, to) {
+	// const { from, to } = getLanguagePair(text);
 	const data = {
 		// 翻译文本的格式
 		FormatType: 'text',

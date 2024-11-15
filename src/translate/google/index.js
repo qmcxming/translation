@@ -6,9 +6,9 @@ const { getValue } = require('./tk');
  * @param {String} text 文本
  * @param {String} url 谷歌翻译服务URL
  */
-async function googleTranslationService(text, url) {
+async function googleTranslationService(text, url, from, to) {
 	const TRANSLATION_API_PATH = '/translate_a/single'; // t
-	const { from, to } = getLanguagePair(text);
+	// const { from, to } = getLanguagePair(text);
 	// 去除 / 如 https://baidu.com/ -> https://baidu.com
 	const DEFAULT_GOOGLE_API_SERVER_URL = url.replace(/\/$/, '');
 	console.log(DEFAULT_GOOGLE_API_SERVER_URL);
@@ -51,8 +51,14 @@ async function googleTranslationService(text, url) {
 			'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
 			'Host': new URL(DEFAULT_GOOGLE_API_SERVER_URL).host
 		}
-	).catch(e => Promise.reject('网络连接超时，请检查代理服务器地址是否可用'));
+	).catch(e => {
+		console.log(e);
+		Promise.reject('网络连接超时，请检查代理服务器地址是否可用')
+	});
 	console.log(res);
+	console.log('----');
+	// console.log(res[res.length - 2]);
+	// console.log(res[res.length - 2][1]);
 	const result = res[0].reduce((acc, item) => {
 		if (item[0]) {
 			acc += item[0];
@@ -63,7 +69,8 @@ async function googleTranslationService(text, url) {
 		from: from,
 		to: to,
 		dst: result,
-		src: text
+		src: text,
+		row: res
 	}
 }
 

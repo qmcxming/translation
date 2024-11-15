@@ -1,5 +1,3 @@
-const crypto = require('crypto');
-const axios = require('axios');
 const baiduTranslationService = require('./baidu');
 const googleTranslationService = require('./google');
 const tencentTranslationService = require('./tencent');
@@ -21,24 +19,26 @@ const { translationEngines, detectLanguage, getLanguagePair } = require('./reque
  * @param {('baidu'|'tencent'|'alibaba'|'google')} engine 翻译引擎
  * @param {String} appId APP ID
  * @param {String} secretKey 密钥
+ * @param {string} [fromLan='auto'] 源语言
+ * @param {string} toLan 目标语言
  * @param {string} [url=translationEngines['google']] 服务器地址(仅谷歌翻译支持)
  * @param {string} [version='general'] 翻译版本(仅阿里翻译支持)
  * @param {string} [scene='general'] 翻译场景(仅阿里翻译支持)
  */
-async function translationService(text, engine, appId, secretKey, url = translationEngines['google'], version =
+async function translationService(text, engine, appId, secretKey, from = 'auto', to, url = translationEngines['google'], version =
 	'general', scene = 'general') {
 	// 转换小写
 	engine = engine.toLocaleLowerCase();
 	await validate(text, appId, secretKey, engine, url).catch(e => Promise.reject(e));
 	switch (engine) {
 		case 'baidu':
-			return baiduTranslationService(text, appId, secretKey);
+			return baiduTranslationService(text, appId, secretKey, from, to);
 		case 'tencent':
-			return tencentTranslationService(text, appId, secretKey);
+			return tencentTranslationService(text, appId, secretKey, from, to);
 		case 'alibaba':
-			return alibabaTranslationService(text, appId, secretKey, version, scene);
+			return alibabaTranslationService(text, appId, secretKey, version, scene, from, to);
 		case 'google':
-			return googleTranslationService(text, url);
+			return googleTranslationService(text, url, from, to);
 	}
 }
 

@@ -6,10 +6,12 @@ const { getLanguagePair, send, errorTips, translationEngines } = require('../req
  * @param {String} text 文本
  * @param {String} appId APP ID
  * @param {String} secretKey 密钥
+ * @param {String} from 源语言
+ * @param {String} to 目标语言
  */
-async function baiduTranslationService(text, appId, secretKey) {
+async function baiduTranslationService(text, appId, secretKey, from, to) {
 	console.log(appId, secretKey);
-	const { from, to } = getLanguagePair(text);
+	// const { from, to } = getLanguagePair(text);
 	const salt = new Date().getTime();
 	const str1 = appId + text + salt + secretKey;
 	const sign = crypto
