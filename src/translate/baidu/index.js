@@ -1,5 +1,6 @@
 const crypto = require('crypto');
-const { getLanguagePair, send, errorTips, translationEngines } = require('../request');
+const { getLanguagePair, send, translationEngines } = require('../request');
+const errorCode = require('./errorCode');
 
 /**
  * 百度翻译服务
@@ -34,12 +35,7 @@ async function baiduTranslationService(text, appId, secretKey, from, to) {
 
 	const res = await send(translationEngines['baidu'], data, null, headers);
 	if (res.error_code) {
-		switch (res.error_code) {
-			case '52003':
-				return Promise.reject(errorTips['appIdError']);
-			case '54001':
-				return Promise.reject(errorTips['secretKeyError']);
-		}
+		return Promise.reject(errorCode[res.error_code]);
 	}
 
 	return {

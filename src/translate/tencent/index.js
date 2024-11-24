@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const { getLanguagePair, send, errorTips, translationEngines } = require('../request');
+const errorCode = require('./errorCode');
 
 /**
  * 腾讯翻译服务
@@ -108,12 +109,7 @@ async function tencentTranslationService(text, appId, secretKey, from, to) {
 
 	// 部分错误处理
 	if (Response.Error) {
-		switch (Response.Error.Code) {
-			case 'AuthFailure.SecretIdNotFound':
-				return Promise.reject(errorTips['appIdError']);
-			case 'AuthFailure.SignatureFailure':
-				return Promise.reject(errorTips['secretKeyError']);
-		}
+		return Promise.reject(errorCode[Response.Error.Code]);
 	}
 
 	return {

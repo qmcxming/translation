@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const { getLanguagePair, send, errorTips, translationEngines } = require('../request');
+const errorCode = require('./errorCode');
 /**
  * 阿里翻译服务
  * @param {String} text 文本
@@ -25,7 +26,6 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 		SourceText: text,
 		// 通用版默认是：general
 		// 专业版默认是：title
-		// TODO 后续新增 翻译版本选择 和 翻译场景选择，再进行修改
 		Scene: scene
 	};
 
@@ -77,20 +77,17 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 	};
 
 	try {
-		const { Data } = await send(url, data, null, headers);
+		const res = await send(url, data, null, headers);
+		if(res.Code !== '200') return Promise.reject(res.Message);
 		return {
 			from: from,
 			to: to,
-			dst: Data.Translated,
+			dst: res.Data.Translated,
 			src: text
 		};
 	} catch (e) {
-		switch (e.response.data.Code) {
-			case 'InvalidAccessKeyId.NotFound':
-				return Promise.reject(errorTips['appIdError']);
-			case 'SignatureDoesNotMatch':
-				return Promise.reject(errorTips['secretKeyError']);
-		}
+		console.log(e);
+		return Promise.reject(errorCode[e.response.data.Code]);
 	}
 }
 

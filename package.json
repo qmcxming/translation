@@ -54,7 +54,7 @@
 				"translation.googleSecret": {
 					"type": "string",
 					"default": "",
-					"description": "谷歌翻译 服务器配置 例如 https://translate.google.com"
+					"description": "谷歌翻译 服务器配置 例如 https://translate.google.com <a style=\"color: '#3574F0'\" href=\"https://qmcx.rth1.xyz\">测速小工具</a>"
 				},
 				"translation.time": {
 					"type": "number",
