@@ -4,7 +4,9 @@
 
 > HBuilderX的翻译插件，中英互译。
 >
-> 说明：目前插件市场开启了看广告下载模式，如果不想看广告的花，可以在GitHub上的releases下载 [translation-plugin.zip](https://github.com/qmcx-ming/translation/releases)，使用[离线安装插件](https://hx.dcloud.net.cn/Tutorial/PluginsInstall?id=offlineinstall)
+> 说明：目前插件市场开启了看广告下载模式，如果不想看广告的话，可以在GitHub上的releases下载 [translation-plugin.zip](https://github.com/qmcx-ming/translation/releases)，使用[离线安装插件](https://hx.dcloud.net.cn/Tutorial/PluginsInstall?id=offlineinstall)。
+>
+> 还有一件事，在手机上看完广告后，记得点击广告上的**关闭**按钮，不然可能会出现，观看广告失败。
 >
 > 离线安装插件注意事项：
 >

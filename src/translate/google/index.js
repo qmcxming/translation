@@ -14,6 +14,7 @@ async function googleTranslationService(text, url, from, to) {
 	console.log(DEFAULT_GOOGLE_API_SERVER_URL);
 	
 	const tkk = await getValue(DEFAULT_GOOGLE_API_SERVER_URL);
+	if(!tkk) return Promise.reject('TKK更新失败, 请检查网络连接');
 	console.log(tkk);
 
 	const params = {

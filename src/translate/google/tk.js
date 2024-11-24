@@ -10,7 +10,10 @@ let innerValue = null;
 let googleTranslationUrl = 'https://translate.google.com';
 
 function getValue(url) {
-	googleTranslationUrl = url;
+	if(url !== googleTranslationUrl) {
+		innerValue = null;// 否则会出现，url更换时，innerValue没有及时刷新
+		googleTranslationUrl = url;
+	}
 	return update() || generate();
 }
 
