@@ -4,7 +4,7 @@ require(
 	'change-case-all');
 const { showTranslationDialog } = require('./html');
 const { translationService, detectLanguage, getLanguagePair } = require('./translate');
-const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime, getAlibabaVS } = require('./settings');
+const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime, getAlibabaVS, getTranslationMode } = require('./settings');
 
 function translation() {
 	let editorPromise = hx.window.getActiveTextEditor();
@@ -13,7 +13,14 @@ function translation() {
 		const text = editor.document.getText(editor.selection);
 		hx.window.setStatusBarMessage('正在翻译中...');
 		const dst = await getTranslationContent(text);
-		if (dst) hx.window.setStatusBarMessage(dst, getHideTime());
+		if (dst) {
+			if(getTranslationMode()) {
+				hx.window.showInformationMessage(`${dst}`, ['复制'])
+					.then(res => hx.env.clipboard.writeText(dst));
+			} else {
+				hx.window.setStatusBarMessage(dst, getHideTime());
+			}
+		}
 	});
 }
 

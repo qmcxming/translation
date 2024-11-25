@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { getLanguagePair, send, errorTips, translationEngines } = require('../request');
+const { getLanguagePair, send, translationEngines } = require('../request');
 const errorCode = require('./errorCode');
 
 /**

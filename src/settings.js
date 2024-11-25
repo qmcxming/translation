@@ -64,11 +64,20 @@ function getAlibabaVS() {
 	};
 }
 
+/**
+ * 获取翻译模式
+ * @return {boolean} 通知栏模式或状态栏模式
+ */
+function getTranslationMode() {
+	return getTranslationConfig('zTranslateMode');
+}
+
 module.exports = {
 	getTranslationConfig,
 	getTranslationEngine,
 	getSecret,
 	getGoogleServerUrl,
 	getHideTime,
-	getAlibabaVS
+	getAlibabaVS,
+	getTranslationMode
 }

@@ -108,6 +108,11 @@
 						"社交",
 						"金融"
 					]
+				},
+				"translation.zTranslateMode": {
+					"type": "boolean",
+					"default": false,
+					"description": "启用通知栏翻译模式"
 				}
 			}
 		},
