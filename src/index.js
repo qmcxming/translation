@@ -15,7 +15,7 @@ function translation() {
 		const dst = await getTranslationContent(text);
 		if (dst) {
 			if(getTranslationMode()) {
-				hx.window.showInformationMessage(`${dst}`, ['复制'])
+				hx.window.showInformationMessage(`<font color="#3574F0">${text}</font><p>${dst}</p>`, ['复制'])
 					.then(res => hx.env.clipboard.writeText(dst));
 			} else {
 				hx.window.setStatusBarMessage(dst, getHideTime());

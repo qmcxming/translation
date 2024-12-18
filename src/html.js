@@ -35,7 +35,7 @@ function showTranslationDialog() {
 		description: te ? te : translationEngine,
 		size: {
 			width: 630,
-			height: 450
+			height: 485
 		}
 	}, {
 		enableScripts: true
@@ -49,8 +49,9 @@ function showTranslationDialog() {
 			<meta charset="UTF-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<title>翻译</title>
-			<link rel="stylesheet" href="${staticPath}/translation.css">
-			<link rel="stylesheet" href="${staticPath}/select.css">
+			<link rel="stylesheet" href="${staticPath}/css/translation.css">
+			<link rel="stylesheet" href="${staticPath}/css/select.css">
+			<link rel="stylesheet" href="${staticPath}/css/accordion.css">
 			<style>
 				#container {
 					display: flex;
@@ -158,6 +159,28 @@ function showTranslationDialog() {
 				.exchange-icon {
 					width: 20px;
 				}
+				
+				.category-content, .example-item {
+					text-indent: 1em;
+				}
+				
+				.category-name, .example-text {
+					font-weight: bold;
+					font-style: italic;
+				}
+				
+				.comma {
+					color: #2196F3;
+					margin: 0 5px 0 2px;
+				}
+				
+				#example-container {
+					display: none;
+				}
+				
+				.mt-10 {
+					margin-top: 10px;
+				}
 			</style>
 		</head>
 		
@@ -198,11 +221,27 @@ function showTranslationDialog() {
 					</div>
 				</div>
 			</div>
-			<script src="${staticPath}/toast.js"></script>
-			<script src="${staticPath}/select.js"></script>
+			<div class="accordion" id="accordion">
+				<div class="accordion-header" onclick="toggleAccordion()">
+					<span></span>
+					<span class="accordion-icon">▶</span>
+				</div>
+				<div class="accordion-content" id="accordion-content">
+					<div class="accordion-item">
+						<div id="category-list"></div>
+					</div>
+					<div id="example-container" class="accordion-item">
+						<div class="example-text mt-10">示例</div>
+						<div id="example"></div>
+					</div>
+				</div>
+			</div>
+			<script src="${staticPath}/js/toast.js"></script>
+			<script src="${staticPath}/js/select.js"></script>
 			<script src="${staticPath}/languages/${translationEngine}-language.json"></script>
 			<script>
 				const options = languageList;
+				let translationData = {};
 				console.log(languageList);
 				function initReceive() {
 					// 接收消息
@@ -223,6 +262,12 @@ function showTranslationDialog() {
 							return showToast(error);
 						};
 						document.getElementById('result').value = data.dst;
+						translationData = data;
+						// 在折叠面板展开时，才去更新折叠面板的内容，否则在点击打开折叠面板时，再去更新
+						if (document.getElementById('accordion').classList.length === 2) {
+							//console.log(document.getElementById('accordion').classList);
+							accordionUpdate();
+						}
 					});
 				}
 				
@@ -400,6 +445,43 @@ function showTranslationDialog() {
 				
 				createCustomSelect('fromSelect', 'selectedLabel1', 'dropdown1', 'auto');
 				createCustomSelect('toSelect', 'selectedLabel2', 'dropdown2', 'zh', true);
+				
+				function toggleAccordion() {
+					const accordion = document.getElementById('accordion');
+					accordion.classList.toggle('active');
+					accordionUpdate();
+				}
+				
+				function accordionUpdate() {
+					if(JSON.stringify(translationData) !== "{}") {
+						const exampleList = translationData.detail.example;
+						const categoryList = translationData.detail.category;
+						let str = '';
+						if (categoryList.length > 0) {
+							str = categoryList.map(item => {
+								return '<div class=\"category-name\">'+ item.category +'</div>'
+								+ '<div class=\"category-content\">'
+								+ item.meaning.map(mean => {
+									return '<div class=\"category-meaning\">' + mean[0] + '</div>'
+									+ '<div class=\"category-meaning\">' 
+									+ mean[1].join('<span class=\"comma\">,</span> ') + '</div>';
+								}).join('')
+								+ '</div>';
+							}).join('');
+						}
+						document.getElementById('category-list').innerHTML = str;
+						document.getElementById('example').innerHTML 
+							= exampleList.length > 0 ? exampleList
+								.map(item => '<p class=\"example-item\">' + item + '</p>')
+								.join('') : '';
+						const exampleContainer = document.getElementById('example-container');
+						if(!exampleList.length) {
+							exampleContainer.style.display = 'none';
+						} else {
+							exampleContainer.style.display = 'block';
+						}
+					}
+				}
 			</script>
 		</body>
 		

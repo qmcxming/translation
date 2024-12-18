@@ -56,22 +56,43 @@ async function googleTranslationService(text, url, from, to) {
 		console.log(e);
 		Promise.reject('网络连接超时，请检查代理服务器地址是否可用')
 	});
-	console.log(res);
-	console.log('----');
-	// console.log(res[res.length - 2]);
-	// console.log(res[res.length - 2][1]);
 	const result = res[0].reduce((acc, item) => {
 		if (item[0]) {
 			acc += item[0];
 		}
 		return acc;
 	}, '');
+	let detail = {};
+	const categoryList = {
+		interjection: '感叹词',
+		noun: '名词',
+		verb: '动词',
+		adjective: '形容词',
+		adverb: '副词',
+		pronoun: '代词',
+		conjunction: '连词',
+		preposition: '介词',
+		article: '冠词',
+		particle: '小品词'
+	};
+	if(res[0][1]) {
+		detail.fromPhonetic = res[0][1][3] ? res[0][1][3] : '';
+		detail.toPhonetic = res[0][1][2] ? res[0][1][2] : '';
+	}
+	// 一般情况下，短语或句子无词类
+	detail.category = res[1] ? res[1].map(item => ({
+		name: item[0],
+		category: item[0] ? categoryList[item[0]] : '',
+		meaning: item[2]// 词义
+	})): [];
+	detail.example = res[13] ? res[13][0].map(item => item[0]) : [];
 	return {
 		from: from,
 		to: to,
 		dst: result,
 		src: text,
-		row: res
+		row: res,
+		detail
 	}
 }
 
