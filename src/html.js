@@ -66,9 +66,9 @@ function showTranslationDialog() {
 				.delete-icon {
 					width: 20px;
 					height: 20px;
-					position: absolute;
+					/* position: absolute;
 					right: -1px;
-					bottom: 2px;
+					bottom: 2px; */
 					cursor: pointer;
 				}
 				
@@ -87,9 +87,9 @@ function showTranslationDialog() {
 					padding: 0 10px;
 				}
 				.more {
-					position: absolute;
+					/* position: absolute;
 					right: 0;
-					bottom: 0;
+					bottom: 0; */
 					width: 30px;
 					height: 30px;
 					text-align: center;
@@ -181,6 +181,70 @@ function showTranslationDialog() {
 				.mt-10 {
 					margin-top: 10px;
 				}
+				
+				.textarea-bottom-toolbar {
+					width: 100%;
+					position: absolute;
+					bottom: 0;
+					height: 30px;
+					/* background-color: hotpink; */
+					border-radius: 4px;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+				}
+			
+				#from-phonetic, #to-phonetic {
+					margin-left: 8px;
+					max-width: 150px;
+					font-size: 13px;
+					/* 超出显示... */
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+				
+				.tooltip {
+					position: relative;
+					display: inline-block;
+				}
+				
+				.tooltip .tooltiptext {
+					visibility: hidden;
+					background-color: white;
+					color: block;
+					border-radius: 3px;
+					padding: 5px;
+					position: absolute;
+					bottom: 100%;
+					max-width: 180px;
+					max-height: 240px;
+					word-wrap:break-word;
+					z-index: 1;
+					text-align: center;
+					overflow: auto;
+				
+					/* 向上弹出 */
+					transform: translateY(20px);
+					opacity: 0;
+					transition: opacity 0.3s ease, transform 0.3s ease;
+					box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+					border: 1px solid #eaeaea;
+					font-size: 13px;
+				}
+				
+				.tooltip:hover .tooltiptext {
+					visibility: visible;
+					opacity: 1;
+					transform: translateY(0px);
+				}
+				
+				#no-data {
+					text-align: center;
+					font-size: 14px;
+					color: #999;
+					display: none;
+				}
 			</style>
 		</head>
 		
@@ -204,7 +268,13 @@ function showTranslationDialog() {
 				<div id="toast-container"></div>
 				<div class="textarea-box">
 					<textarea autofocus class="textarea" name="text" id="text" cols="30" rows="10"></textarea>
-					<img class="delete-icon" src="${staticPath}/icons/delete.svg" alt="清空" onclick="clearText()">
+					<div class="textarea-bottom-toolbar">
+						<div class="tooltip">
+							<div id="from-phonetic"></div>
+							<span id="from-phonetic-tip" class="tooltiptext"></span>
+						</div>
+						<img class="delete-icon" src="${staticPath}/icons/delete.svg" alt="清空" onclick="clearText()">
+					</div>
 				</div>
 				<div class="feature">
 						<button onclick="toTranslate()">翻译</button>
@@ -213,7 +283,13 @@ function showTranslationDialog() {
 				</div>
 				<div class="textarea-box">
 					<textarea class="textarea" name="result" id="result" cols="30" rows="10" readonly></textarea>
-					<button id="more" class="more button--plain">更多</button>
+					<div class="textarea-bottom-toolbar">
+						<div class="tooltip">
+							<div id="to-phonetic"></div>
+							<span id="to-phonetic-tip" class="tooltiptext"></span>
+						</div>
+						<button id="more" class="more button--plain">更多</button>
+					</div>
 					<div id="popup" class="popup hidden">
 						<div class="popup-item" onclick="openLink('baidu')">百度</div>
 						<div class="popup-item" onclick="openLink('google')">谷歌</div>
@@ -227,6 +303,7 @@ function showTranslationDialog() {
 					<span class="accordion-icon">▶</span>
 				</div>
 				<div class="accordion-content" id="accordion-content">
+					<div id="no-data">暂无</div>
 					<div class="accordion-item">
 						<div id="category-list"></div>
 					</div>
@@ -263,10 +340,21 @@ function showTranslationDialog() {
 						};
 						document.getElementById('result').value = data.dst;
 						translationData = data;
-						// 在折叠面板展开时，才去更新折叠面板的内容，否则在点击打开折叠面板时，再去更新
-						if (document.getElementById('accordion').classList.length === 2) {
-							//console.log(document.getElementById('accordion').classList);
-							accordionUpdate();
+						// 谷歌翻译特有的功能
+						if (data.name === 'google') {
+							const { fromPhonetic, toPhonetic } = data.detail;
+							const fromPhoneticDom = document.getElementById('from-phonetic');
+							const toPhoneticDom = document.getElementById('to-phonetic');
+							fromPhoneticDom.textContent = fromPhonetic;
+							toPhoneticDom.textContent = toPhonetic;
+							// 设置tooltip
+							document.getElementById('from-phonetic-tip').textContent = fromPhonetic;
+							document.getElementById('to-phonetic-tip').textContent = toPhonetic;
+							// 在折叠面板展开时，才去更新折叠面板的内容，否则在点击打开折叠面板时，再去更新
+							if (document.getElementById('accordion').classList.length === 2) {
+								//console.log(document.getElementById('accordion').classList);
+								accordionUpdate();
+							}
 						}
 					});
 				}
@@ -447,6 +535,9 @@ function showTranslationDialog() {
 				createCustomSelect('toSelect', 'selectedLabel2', 'dropdown2', 'zh', true);
 				
 				function toggleAccordion() {
+					if(translationData.name !== 'google') {
+						return;
+					}
 					const accordion = document.getElementById('accordion');
 					accordion.classList.toggle('active');
 					accordionUpdate();
@@ -475,11 +566,11 @@ function showTranslationDialog() {
 								.map(item => '<p class=\"example-item\">' + item + '</p>')
 								.join('') : '';
 						const exampleContainer = document.getElementById('example-container');
-						if(!exampleList.length) {
-							exampleContainer.style.display = 'none';
-						} else {
-							exampleContainer.style.display = 'block';
-						}
+						document.getElementById('no-data').style.display = 
+							(!exampleList.length && !categoryList.length) ? 'block' : 'none';
+						exampleContainer.style.display = exampleList.length ? 'block' : 'none';
+					} else {
+						document.getElementById('no-data').style.display = 'block';
 					}
 				}
 			</script>

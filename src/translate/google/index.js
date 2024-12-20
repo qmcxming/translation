@@ -87,6 +87,7 @@ async function googleTranslationService(text, url, from, to) {
 	})): [];
 	detail.example = res[13] ? res[13][0].map(item => item[0]) : [];
 	return {
+		name: 'google',
 		from: from,
 		to: to,
 		dst: result,

@@ -11,7 +11,7 @@ const errorCode = require('./errorCode');
  * @param {String} to 目标语言
  */
 async function baiduTranslationService(text, appId, secretKey, from, to) {
-	console.log(appId, secretKey);
+	// console.log(appId, secretKey);
 	// const { from, to } = getLanguagePair(text);
 	const salt = new Date().getTime();
 	const str1 = appId + text + salt + secretKey;
