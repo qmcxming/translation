@@ -1,6 +1,18 @@
 const axios = require('axios');
 const qs = require('qs');
 
+class ErrorMessage {
+	/**
+	 * 统一错误提示
+	 * @param {string} name - 翻译引擎名称
+	 * @param {string} error - 错误信息
+	 */
+	constructor(name, error) {
+		this.name = name;
+		this.error = error;
+	}
+}
+
 /**
  * 通用错误提示
  */
@@ -77,5 +89,6 @@ module.exports = {
 	errorTips,
 	translationEngines,
 	getLanguagePair,
-	detectLanguage
+	detectLanguage,
+	ErrorMessage
 };

@@ -1,6 +1,6 @@
 const hx = require("hbuilderx");
 const path = require('path');
-const { translationService, getLanguagePair } = require('./translate');
+const { translate, getLanguagePair } = require('./translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('./settings');
 
 const staticPath = path.join(__dirname, 'static');
@@ -375,7 +375,6 @@ function showTranslationDialog() {
 				function setSelected(selectOptions, dropdown, selectedLabel, check) {
 					for (let i = 0; i < selectOptions.length; i++) {
 						const option = selectOptions[i];
-						console.log('麻蛋', option.dataset.value);
 						if (check === option.dataset.value) {
 							console.log('选中');
 							// 高亮显示被选中的选项
@@ -532,7 +531,7 @@ function showTranslationDialog() {
 				}
 				
 				createCustomSelect('fromSelect', 'selectedLabel1', 'dropdown1', 'auto');
-				createCustomSelect('toSelect', 'selectedLabel2', 'dropdown2', 'zh', true);
+				createCustomSelect('toSelect', 'selectedLabel2', 'dropdown2', languageList[1].code, true);
 				
 				function toggleAccordion() {
 					if(translationData.name !== 'google') {
@@ -546,7 +545,7 @@ function showTranslationDialog() {
 				function accordionUpdate() {
 					if(JSON.stringify(translationData) !== "{}") {
 						const exampleList = translationData.detail.example;
-						const categoryList = translationData.detail.category;
+						const categoryList = translationData.detail.dict;
 						let str = '';
 						if (categoryList.length > 0) {
 							str = categoryList.map(item => {
@@ -581,18 +580,22 @@ function showTranslationDialog() {
 		console.log(msg);
 		if (msg.command == 'translation') {
 			const { appId, secretKey } = getSecret();
-			translationService(
-				msg.data,
+			const { version, scene } = getAlibabaVS();
+			const { from, to, data } = msg;
+			translate(
+				data,
 				translationEngine,
 				appId,
 				secretKey,
-				msg.from,
-				msg.to,
-				getGoogleServerUrl()
+				from,
+				to,
+				getGoogleServerUrl(),
+				version,
+				scene
 			).then(res => {
 				webview.postMessage({ data: res });
 			}).catch(e => {
-				webview.postMessage({ error: e });
+				webview.postMessage(e);
 			});
 		}
 		if (msg.command === 'openLink') {

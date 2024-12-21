@@ -3,7 +3,7 @@ const { camelCase, pascalCase, snakeCase, constantCase, kebabCase, sentenceCase,
 require(
 	'change-case-all');
 const { showTranslationDialog } = require('./html');
-const { translationService, detectLanguage, getLanguagePair } = require('./translate');
+const { translate, detectLanguage, getLanguagePair } = require('./translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime, getAlibabaVS, getTranslationMode } = require('./settings');
 
 function translation() {
@@ -170,7 +170,7 @@ async function getTranslationContent(text) {
 	const { from, to } = getLanguagePair(text);
 	hx.window.setStatusBarMessage('正在翻译中...');
 	try {
-		const res = await translationService(
+		const res = await translate(
 			text,
 			getTranslationEngine(),
 			appId,
@@ -185,8 +185,9 @@ async function getTranslationContent(text) {
 		hx.window.clearStatusBarMessage();
 		return res.dst;
 	} catch (e) {
+		const { name, error } = e;
 		console.log(e);
-		hx.window.setStatusBarMessage(e, 3000, 'error');
+		hx.window.setStatusBarMessage(`${name}:${error}`, 3000, 'error');
 	}
 }
 

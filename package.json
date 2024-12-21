@@ -39,17 +39,17 @@
 				"translation.baiduSecret": {
 					"type": "string",
 					"default": "",
-					"description": "百度翻译密钥 使用逗号隔开 例如 AppId,SecretKey <a style=\"color: '#3574F0'\" href=\"https://api.fanyi.baidu.com/product/11\">申请地址</a>"
+					"description": "百度翻译配置 使用逗号隔开 例如 AppId,SecretKey <a style=\"color: '#3574F0'\" href=\"https://api.fanyi.baidu.com/product/11\">申请地址</a>"
 				},
 				"translation.tencentSecret": {
 					"type": "string",
 					"default": "",
-					"description": "腾讯翻译密钥 使用逗号隔开 例如 SecretId,SecretKey <a style=\"color: '#3574F0'\" href=\"https://cloud.tencent.com/product/tmt\">申请地址</a>"
+					"description": "腾讯翻译配置 使用逗号隔开 例如 SecretId,SecretKey <a style=\"color: '#3574F0'\" href=\"https://cloud.tencent.com/product/tmt\">申请地址</a>"
 				},
 				"translation.alibabaSecret": {
 					"type": "string",
 					"default": "",
-					"description": "阿里翻译密钥 使用逗号隔开 例如 AccessKeyID,AccessKeySecret <a style=\"color: '#3574F0'\" href=\"https://www.aliyun.com/product/ai/base_alimt?source=5176.11533457&userCode=wsnup3vv\">申请地址</a>"
+					"description": "阿里翻译配置 使用逗号隔开 例如 AccessKeyID,AccessKeySecret <a style=\"color: '#3574F0'\" href=\"https://www.aliyun.com/product/ai/base_alimt?source=5176.11533457&userCode=wsnup3vv\">申请地址</a>"
 				},
 				"translation.googleSecret": {
 					"type": "string",

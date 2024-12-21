@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { getLanguagePair, send, translationEngines } = require('../request');
+const { getLanguagePair, send, translationEngines, ErrorMessage } = require('../request');
 const errorCode = require('./errorCode');
 
 /**
@@ -9,8 +9,9 @@ const errorCode = require('./errorCode');
  * @param {String} secretKey 密钥
  * @param {String} from 源语言
  * @param {String} to 目标语言
+ * @param {String} original 原文
  */
-async function baiduTranslationService(text, appId, secretKey, from, to) {
+async function baiduTranslate(text, appId, secretKey, from, to, original) {
 	// console.log(appId, secretKey);
 	// const { from, to } = getLanguagePair(text);
 	const salt = new Date().getTime();
@@ -35,16 +36,18 @@ async function baiduTranslationService(text, appId, secretKey, from, to) {
 
 	const res = await send(translationEngines['baidu'], data, null, headers);
 	if (res.error_code) {
-		return Promise.reject(errorCode[res.error_code]);
+		return Promise.reject(new ErrorMessage('baidu', errorCode[res.error_code]));
 	}
-
-	return {
+	const response = {
+		name: 'baidu',
 		from: res.from,
 		to: res.to,
 		// destination 目标
 		dst: res.trans_result[0].dst,
 		src: res.trans_result[0].src
-	}
+	};
+	if(original) response.row = res
+	return response;
 }
 
-module.exports = baiduTranslationService
+module.exports = baiduTranslate;

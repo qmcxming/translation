@@ -1,6 +1,7 @@
-const crypto = require('crypto');
-const { getLanguagePair, send, translationEngines } = require('../request');
+const { getLanguagePair, send, translationEngines, ErrorMessage } = require('../request');
 const errorCode = require('./errorCode');
+const crypto = require('crypto');
+
 /**
  * 阿里翻译服务
  * @param {String} text 文本
@@ -10,10 +11,11 @@ const errorCode = require('./errorCode');
  * @param {string} [scene='general'] 翻译场景(通用版: general 专业版: title、description、communication、medical、social、finance)
  * @param {String} from 源语言
  * @param {String} to 目标语言
+ * @param {String} original 是否返回原文
  * @link https://help.aliyun.com/zh/machine-translation/developer-reference/api-alimt-2018-10-12-translate?spm=a2c4g.11186623.0.0.6ad24f6fmuQm0q - 专业版
  * @link https://help.aliyun.com/zh/machine-translation/developer-reference/api-alimt-2018-10-12-translategeneral?spm=a2c4g.11186623.0.0.546b6678QMR17g - 通用版
  */
-async function alibabaTranslationService(text, appId, secretKey, version = 'general', scene = 'general', from, to) {
+async function alibabaTranslate(text, appId, secretKey, version = 'general', scene = 'general', from, to, original) {
 	// const { from, to } = getLanguagePair(text);
 	const data = {
 		// 翻译文本的格式
@@ -31,10 +33,8 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 
 	//  通用版
 	const url = translationEngines['alibaba'][version];
-	// 专业版 http://mt.cn-hangzhou.aliyuncs.com/api/translate/web/ecommerce 并且设置 Scene: 'title'
-
 	const realUrl = new URL(url);
-
+	
 	// 下面字段用于进行加密签名
 	const method = "POST";
 	const accept = "application/json";
@@ -63,7 +63,6 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 
 	// 3. 获得最终的Authorization
 	const authHeader = "acs " + appId + ":" + signature;
-
 	const headers = {
 		'Accept': accept,
 		'Content-Type': content_type,
@@ -78,16 +77,20 @@ async function alibabaTranslationService(text, appId, secretKey, version = 'gene
 
 	try {
 		const res = await send(url, data, null, headers);
-		if(res.Code !== '200') return Promise.reject(res.Message);
-		return {
+		if(res.Code !== '200') return Promise.reject(new ErrorMessage('alibaba', res.Message));
+		const response = {
+			name: 'alibaba',
+			// TODO 阿里翻译在auto时，会返回源语言，但是我这个版本不会返回，切换到其他的版本，还会报错
 			from: from,
 			to: to,
 			dst: res.Data.Translated,
 			src: text
 		};
+		if(original) response.row = res;
+		return response;
 	} catch (e) {
 		console.log(e);
-		return Promise.reject(errorCode[e.response.data.Code]);
+		return Promise.reject(new ErrorMessage('alibaba', errorCode[e.response.data.Code]));
 	}
 }
 
@@ -118,4 +121,4 @@ function HMACSha1(data, key) {
 	return Buffer.from(md5Hash, "hex").toString('base64');
 }
 
-module.exports = alibabaTranslationService;
+module.exports = alibabaTranslate;

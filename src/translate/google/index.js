@@ -1,12 +1,16 @@
-const { getLanguagePair, send } = require('../request');
+const { getLanguagePair, send, ErrorMessage } = require('../request');
 const { getValue } = require('./tk');
+const { handlerGoogleData } = require('./g-utils');
 
 /**
  * 谷歌翻译服务
  * @param {String} text 文本
  * @param {String} url 谷歌翻译服务URL
+ * @param {String} from 源语言
+ * @param {String} to 目标语言
+ * @param {String} original 是否返回原文
  */
-async function googleTranslationService(text, url, from, to) {
+async function googleTranslate(text, url, from, to, original) {
 	const TRANSLATION_API_PATH = '/translate_a/single'; // t
 	// const { from, to } = getLanguagePair(text);
 	// 去除 / 如 https://baidu.com/ -> https://baidu.com
@@ -14,7 +18,7 @@ async function googleTranslationService(text, url, from, to) {
 	console.log(DEFAULT_GOOGLE_API_SERVER_URL);
 	
 	const tkk = await getValue(DEFAULT_GOOGLE_API_SERVER_URL);
-	if(!tkk) return Promise.reject('TKK更新失败, 请检查网络连接');
+	if(!tkk) return Promise.reject(new ErrorMessage('google', 'TKK更新失败, 请检查网络连接'));
 	console.log(tkk);
 
 	const params = {
@@ -54,47 +58,19 @@ async function googleTranslationService(text, url, from, to) {
 		}
 	).catch(e => {
 		console.log(e);
-		Promise.reject('网络连接超时，请检查代理服务器地址是否可用')
+		Promise.reject(new ErrorMessage('google', '网络连接超时，请检查代理服务器地址是否可用'));
 	});
-	const result = res[0].reduce((acc, item) => {
-		if (item[0]) {
-			acc += item[0];
-		}
-		return acc;
-	}, '');
-	let detail = {};
-	const categoryList = {
-		interjection: '感叹词',
-		noun: '名词',
-		verb: '动词',
-		adjective: '形容词',
-		adverb: '副词',
-		pronoun: '代词',
-		conjunction: '连词',
-		preposition: '介词',
-		article: '冠词',
-		particle: '小品词'
-	};
-	if(res[0][1]) {
-		detail.fromPhonetic = res[0][1][3] ? res[0][1][3] : '';
-		detail.toPhonetic = res[0][1][2] ? res[0][1][2] : '';
-	}
-	// 一般情况下，短语或句子无词类
-	detail.category = res[1] ? res[1].map(item => ({
-		name: item[0],
-		category: item[0] ? categoryList[item[0]] : '',
-		meaning: item[2]// 词义
-	})): [];
-	detail.example = res[13] ? res[13][0].map(item => item[0]) : [];
-	return {
-		name: 'google',
-		from: from,
+	const { name, result, detail } = handlerGoogleData(res);
+	const response = {
+		name,
+		from: res[2],
 		to: to,
 		dst: result,
 		src: text,
-		row: res,
 		detail
-	}
+	};
+	if(original) response.row = res;
+	return response;
 }
 
-module.exports = googleTranslationService
+module.exports = googleTranslate;

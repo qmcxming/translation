@@ -1,6 +1,6 @@
 languageList = [
 	{ "name": "自动检测", "code": "auto" },
-	{ "name": "中文", "code": "zh" },
+	{ "name": "中文", "code": "zh-CN" },
 	{ "name": "英语", "code": "en" },
 	{ "name": "日语", "code": "ja" },
 	{ "name": "韩语", "code": "ko" },

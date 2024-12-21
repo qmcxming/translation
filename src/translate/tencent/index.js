@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { getLanguagePair, send, translationEngines } = require('../request');
+const { getLanguagePair, send, translationEngines, ErrorMessage } = require('../request');
 const errorCode = require('./errorCode');
 
 /**
@@ -10,7 +10,7 @@ const errorCode = require('./errorCode');
  * @param {String} from 源语言
  * @param {String} to 目标语言
  */
-async function tencentTranslationService(text, appId, secretKey, from, to) {
+async function tencentTranslate(text, appId, secretKey, from, to, original) {
 	// const { from, to } = getLanguagePair(text);
 	const data = {
 		SourceText: text,
@@ -109,15 +109,18 @@ async function tencentTranslationService(text, appId, secretKey, from, to) {
 
 	// 部分错误处理
 	if (Response.Error) {
-		return Promise.reject(errorCode[Response.Error.Code]);
+		return Promise.reject(new ErrorMessage('tencent', errorCode[Response.Error.Code]));
 	}
 
-	return {
+	const response = {
+		name: 'tencent',
 		from: Response.Source,
 		to: Response.Target,
 		dst: Response.TargetText,
 		src: text
 	};
+	if(original) response.row = Response;
+	return response;
 }
 
 /**
@@ -161,4 +164,4 @@ function sha256(message, secret = "", encoding) {
 	return hmac.update(message).digest(encoding)
 }
 
-module.exports = tencentTranslationService
+module.exports = tencentTranslate
