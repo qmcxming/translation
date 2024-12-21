@@ -245,6 +245,20 @@ function showTranslationDialog() {
 					color: #999;
 					display: none;
 				}
+
+				#accordion-icon-google {
+					opacity: 0;
+				}
+
+				#detect-language {
+					font-size: 13px;
+					color: #6D6E71;
+					margin-left: 10px;
+				}
+
+				#fromSelect {
+					align-items: center;
+				}
 			</style>
 		</head>
 		
@@ -252,6 +266,7 @@ function showTranslationDialog() {
 			<div class="select-container">
 				<div class="custom-select" id="fromSelect">
 					<div id="selectedLabel1">请选择</div>
+					<div id="detect-language"></div>
 					<div class="arrow"></div> <!-- 箭头 -->
 				<div class="dropdown" id="dropdown1"></div>
 				</div>
@@ -300,7 +315,7 @@ function showTranslationDialog() {
 			<div class="accordion" id="accordion">
 				<div class="accordion-header" onclick="toggleAccordion()">
 					<span></span>
-					<span class="accordion-icon">▶</span>
+					<span id="accordion-icon-google" class="accordion-icon">▶</span>
 				</div>
 				<div class="accordion-content" id="accordion-content">
 					<div id="no-data">暂无</div>
@@ -339,9 +354,17 @@ function showTranslationDialog() {
 							return showToast(error);
 						};
 						document.getElementById('result').value = data.dst;
+						// 设置auto模式下 检测的语种[阿里翻译不能使用, 所以多做了判断]
+						const detectLanguage = document.getElementById('detect-language');
+						if((data.from !== 'auto') && (document.getElementById('selectedLabel1').getAttribute('data-value') === 'auto')) {
+							detectLanguage.textContent = options.find(item => item.code === data.from).name;
+						} else {
+							detectLanguage.textContent = '';
+						}
 						translationData = data;
 						// 谷歌翻译特有的功能
 						if (data.name === 'google') {
+							document.getElementById('accordion-icon-google').style.opacity = 1;
 							const { fromPhonetic, toPhonetic } = data.detail;
 							const fromPhoneticDom = document.getElementById('from-phonetic');
 							const toPhoneticDom = document.getElementById('to-phonetic');
@@ -516,7 +539,10 @@ function showTranslationDialog() {
 							e.stopPropagation(); // 阻止事件冒泡
 							selectedLabel.textContent = e.target.textContent;
 							selectedLabel.setAttribute('data-value', e.target.getAttribute('data-value')); // 更新data-value
-				
+							// 非auto 清除检测出的语种
+							if((labelId === 'selectedLabel1') && (e.target.getAttribute('data-value') !== 'auto')) {
+								document.getElementById('detect-language').textContent = '';
+							}
 							// 高亮显示被选中的选项
 							const selectedOption = dropdown.querySelector('.option.selected');
 							if (selectedOption) {
