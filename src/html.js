@@ -4,6 +4,7 @@ const { translate, getLanguagePair } = require('./translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('./settings');
 const { EdgeTTS } = require('node-edge-tts');
 const fs = require('fs');
+const crypto = require('crypto');
 const tts = new EdgeTTS();
 
 const staticPath = path.join(__dirname, 'static');
@@ -38,7 +39,7 @@ function showTranslationDialog() {
 		description: te ? te : translationEngine,
 		size: {
 			width: 630,
-			height: 485
+			height: 495
 		}
 	}, {
 		enableScripts: true
@@ -122,6 +123,8 @@ function showTranslationDialog() {
 					resize: none;
 					width: 100%;
 					height: 100%;
+					/* 空出输入框工具栏的部分高度 */
+					padding-bottom: 20px;
 				}
 
 				.feature {
@@ -399,20 +402,32 @@ function showTranslationDialog() {
 					</div>
 				</div>
 			</div>
+			<script>
+				// 保证其他js文件也可以使用该全局变量，如 accordion.js中使用
+				let translationData = {};
+				
+				let audioElement1;
+				let audioElement2;
+				let audio1;
+				let audio2;
+			</script>
 			<script src="${staticPath}/js/toast.js"></script>
 			<script src="${staticPath}/js/select.js"></script>
+			<script src="${staticPath}/js/common.js"></script>
+			<script src="${staticPath}/js/accordion.js"></script>
 			<script src="${staticPath}/languages/${translationEngine}-language.json"></script>
 			<script>
+				const defaultUrl = document.getElementById('defaultUrl');
+			
 				const options = languageList;
-				let translationData = {};
 				console.log(languageList);
 				function initReceive() {
 					// 接收消息
 					hbuilderx.onDidReceiveMessage((res) => {
 						console.log(res);
 						const { data, error, content, from, to, ft } = res;
+						// 音频
 						if ((ft === 'from') || (ft === 'to')) {
-							console.log(ft, data);
 							const audio = document.getElementById(ft + 'Sound');
 							audio.setAttribute('url', data);
 							loadingStatus(audio, false);
@@ -420,6 +435,7 @@ function showTranslationDialog() {
 							playSound(audio, ft);
 							return;
 						}
+						// 回显
 						if (content) {
 							document.getElementById('text').value = content;
 							// to音频置为可使用
@@ -469,37 +485,6 @@ function showTranslationDialog() {
 						}
 					});
 				}
-				
-				async function setSelectOption(from, to) {
-					const dropdown1 = document.getElementById('dropdown1');
-					const selectOptions1 = dropdown1.getElementsByClassName('option');
-					const selectedLabel1 = document.getElementById('selectedLabel1');
-					setSelected(selectOptions1, dropdown1, selectedLabel1, from);
-					
-					const dropdown2 = document.getElementById('dropdown2');
-					const selectOptions2 = dropdown2.getElementsByClassName('option');
-					const selectedLabel2 = document.getElementById('selectedLabel2');
-					setSelected(selectOptions2, dropdown2, selectedLabel2, to);
-					await new Promise(resolve => setTimeout(resolve, 0)); // 确保每个操作按顺序完成
-				}
-				
-				function setSelected(selectOptions, dropdown, selectedLabel, check) {
-					for (let i = 0; i < selectOptions.length; i++) {
-						const option = selectOptions[i];
-						if (check === option.dataset.value) {
-							console.log('选中');
-							// 高亮显示被选中的选项
-							const selectedOption = dropdown.querySelector('.option.selected');
-							if (selectedOption) {
-								selectedOption.classList.remove('selected'); // 移除之前的选中状态
-							}
-							selectedLabel.textContent = option.innerHTML;
-							selectedLabel.setAttribute('data-value', option.dataset.value); // 设置data-value
-							option.classList.add('selected');
-						}
-					}
-				}
-
 			
 				function toTranslate() {
 					const text = document.getElementById('text').value;
@@ -516,37 +501,6 @@ function showTranslationDialog() {
 					console.log(text);
 				}
 				
-				function copy() {
-					const result = document.getElementById('result');
-					if (isEmpty(result.value)) {
-						showToast('请先翻译');
-						return;
-					}
-					result.select();
-					document.execCommand('copy');
-					showToast('复制成功');
-				}
-				
-				document.getElementById('text').onkeydown = (event) => {
-					// 回车 翻译 
-					if (!event.shiftKey && event.keyCode == 13) {
-						event.cancelBubble = true;
-						event.preventDefault();
-						event.stopPropagation();
-						toTranslate();
-					}
-				}
-				
-				// 判空
-				function isEmpty(str) { return !str || str.trim() === ''; }
-				
-				function clearText() {
-					const text = document.getElementById('text');
-					if (isEmpty(text.value)) return;
-					text.value = '';
-					document.getElementById('result').value = '';
-					reset();
-				}
 				window.addEventListener("hbuilderxReady", initReceive);
 				
 				// 气泡框显示隐藏
@@ -582,121 +536,12 @@ function showTranslationDialog() {
 						popup.classList.add("hidden");
 					}, 300);
 				}
-			
-				function openLink(engine) {
-					const text = document.getElementById("text").value;
-					if (isEmpty(text)) {
-						showToast('请先输入翻译内容');
-						return;
-					}
-					// 发送webview消息
-					hbuilderx.postMessage({ command: "openLink", engine: engine, text: text });
-					hiddenPopup();
-					console.log(engine);
-				}
-				
-				
-				function createCustomSelect(selectId, labelId, dropdownId, defaultValue, filterFirstOption = false) {
-					const customSelect = document.getElementById(selectId);
-					const dropdown = document.getElementById(dropdownId);
-					const selectedLabel = document.getElementById(labelId);
-				
-					// 动态生成选项
-					options.forEach((option, index) => {
-						if (filterFirstOption && index === 0) return; // 过滤掉第一个选项
-						const div = document.createElement('div');
-						div.className = 'option';
-						div.textContent = option.name;
-						div.setAttribute('data-value', option.code);
-						// 设置默认值
-						if (option.code === defaultValue) {
-							selectedLabel.textContent = option.name;
-							selectedLabel.setAttribute('data-value', option.code); // 设置data-value
-							div.classList.add('selected');
-						}
-						dropdown.appendChild(div);
-					});
-				
-					customSelect.onclick = function(e) {
-						e.stopPropagation(); // 阻止事件冒泡
-						const isOpen = dropdown.classList.toggle('show'); // 切换显示状态
-						customSelect.classList.toggle('open', isOpen); // 添加或移除打开类
-					};
-				
-					dropdown.onclick = function(e) {
-						if (e.target.classList.contains('option')) {
-							e.stopPropagation(); // 阻止事件冒泡
-							selectedLabel.textContent = e.target.textContent;
-							selectedLabel.setAttribute('data-value', e.target.getAttribute('data-value')); // 更新data-value
-							// 非auto 清除检测出的语种
-							if((labelId === 'selectedLabel1') && (e.target.getAttribute('data-value') !== 'auto')) {
-								document.getElementById('detect-language').textContent = '';
-							}
-							// 高亮显示被选中的选项
-							const selectedOption = dropdown.querySelector('.option.selected');
-							if (selectedOption) {
-								selectedOption.classList.remove('selected'); // 移除之前的选中状态
-							}
-							e.target.classList.add('selected'); // 添加选中状态
-				
-							dropdown.classList.remove('show'); // 隐藏下拉框
-							customSelect.classList.remove('open'); // 移除打开类
-						}
-					};
-				}
 				
 				createCustomSelect('fromSelect', 'selectedLabel1', 'dropdown1', 'auto');
 				createCustomSelect('toSelect', 'selectedLabel2', 'dropdown2', languageList[1].code, true);
 				
-				function toggleAccordion() {
-					if(translationData.name !== 'google') {
-						return;
-					}
-					const accordion = document.getElementById('accordion');
-					accordion.classList.toggle('active');
-					accordionUpdate();
-				}
-				
-				function accordionUpdate() {
-					if(JSON.stringify(translationData) !== "{}") {
-						const exampleList = translationData.detail.example;
-						const categoryList = translationData.detail.dict;
-						let str = '';
-						if (categoryList.length > 0) {
-							str = categoryList.map(item => {
-								return '<div class=\"category-name\">'+ item.category +'</div>'
-								+ '<div class=\"category-content\">'
-								+ item.meaning.map(mean => {
-									return '<div class=\"category-meaning\">' + mean[0] + '</div>'
-									+ '<div class=\"category-meaning\">' 
-									+ mean[1].join('<span class=\"comma\">,</span> ') + '</div>';
-								}).join('')
-								+ '</div>';
-							}).join('');
-						}
-						document.getElementById('category-list').innerHTML = str;
-						document.getElementById('example').innerHTML 
-							= exampleList.length > 0 ? exampleList
-								.map(item => '<p class=\"example-item\">' + item + '</p>')
-								.join('') : '';
-						const exampleContainer = document.getElementById('example-container');
-						document.getElementById('no-data').style.display = 
-							(!exampleList.length && !categoryList.length) ? 'block' : 'none';
-						exampleContainer.style.display = exampleList.length ? 'block' : 'none';
-					} else {
-						document.getElementById('no-data').style.display = 'block';
-					}
-				}
-				
-				let audioElement1;
-					let audioElement2;
-					let audio1;
-					let audio2;
-				
 				function playSound(audio, ft) {
-					console.log(audio, ft);
 					const audioUrl = audio.getAttribute('url');
-					console.log(audioUrl);
 			
 					// 选择音频元素和全局音频对象
 					const targetAudio = (ft === 'from') ? audio1 : audio2;
@@ -711,6 +556,13 @@ function showTranslationDialog() {
 						// 没有音频URL时不继续执行
 						document.getElementById('message').textContent = '正在获取音频...';
 						hbuilderx.postMessage({ command: 'getAudio', data: text, ft: ft })
+						return;
+					}
+					
+					// 如果当前音频正在播放，暂停(即，再次点击暂停)
+					if (targetAudioElement && !targetAudioElement.paused) {
+						targetAudioElement.pause();
+						if (targetAudio) checkSoundStatus(targetAudio, false);
 						return;
 					}
 			
@@ -748,7 +600,7 @@ function showTranslationDialog() {
 				// 加载状态切换
 				function loadingStatus(audio, status) {
 					if (status) {
-						audio.src = document.getElementById('defaultUrl').value + 'loading.svg';
+						audio.src = defaultUrl.value + 'loading.svg';
 						audio.style.pointerEvents = 'none';
 						audio.style.opacity = 0.5;
 						// 图标旋转
@@ -761,26 +613,25 @@ function showTranslationDialog() {
 				}
 				
 				function checkSoundStatus(audio, isPlaying) {
-					const defaultUrl = document.getElementById('defaultUrl').value;
 					if (isPlaying) {
-						audio.setAttribute('src', defaultUrl + 'end.svg');
+						audio.setAttribute('src', defaultUrl.value + 'end.svg');
 						audio.style.transform = 'scale(1.4)'; // 放大
 						setTimeout(() => {
 							audio.style.transform = 'scale(1)'; // 恢复初始大小
 						}, 500); // 与过渡时间一致
 					} else {
-						audio.setAttribute('src', defaultUrl + 'sound.svg');
+						audio.setAttribute('src', defaultUrl.value + 'sound.svg');
 					}
 				}
 				
 				function inputChange(textarea, ft) {
-					console.log(textarea.id,textarea)
 					const sound = document.getElementById(ft + 'Sound')
+					// 输入框的文本变化，就清理掉之前的音频
+					sound.setAttribute('url', '');
+					// 文本框为空时，禁用按钮
 					if (textarea.value.length === 0) {
 						sound.style.pointerEvents = 'none';
 						sound.style.opacity = 0.5;
-						// 音频置空
-						sound.setAttribute('url', '');
 					} else {
 						sound.style.pointerEvents = 'auto';
 						sound.style.opacity = 1;
@@ -800,9 +651,17 @@ function showTranslationDialog() {
 						el.setAttribute('url', '');
 						el.style.pointerEvents = 'none';
 						el.style.opacity = 0.5;
-				
+						// 清除图标旋转
+						el.style.animation = '';
+						el.setAttribute('src', defaultUrl.value + 'sound.svg');
+						document.getElementById('message').textContent = '';// 清除加载信息
 						phoneticEl.textContent = '';
 					});
+					// 音频置空
+					audio1 = null;
+					audio2 = null;
+					audioElement1 = null;
+					audioElement2 = null;
 				}
 			</script>
 		</body>
@@ -849,11 +708,20 @@ function showTranslationDialog() {
 	});
 }
 
+function generateMD5(input) {
+	const hash = crypto.createHash('md5');
+	hash.update(input);
+	return hash.digest('hex');
+}
+
 async function getAudio(data, ft) {
 	const timestamp = Date.now();
-	// TODO 文件名后续可以采用md5加密，便于判断文件是否存在，若是存在直接返回即可
 	// 缓存，减少请求次数
-	let audioUrl = `${staticPath}/audio/${ft}-${generateDateTime()}.mp3`
+	let audioUrl = `${staticPath}/audio/${generateMD5(data)}.mp3`;
+	if (fs.existsSync(audioUrl)) {
+		console.log('使用缓存audio咯');
+		return audioUrl;
+	}
 	// 清理audio前一天的文件
 	const files = fs.readdirSync(`${staticPath}/audio`);
 	files.forEach(file => {
@@ -873,27 +741,6 @@ async function getAudio(data, ft) {
 		return e;
 	}
 	return audioUrl;
-}
-
-function generateDateTime() {
-	// 创建一个新的Date对象，代表当前时间
-	const now = new Date();
-
-	// 获取年、月、日、小时、分钟和秒
-	const year = now.getFullYear();
-	const month = now.getMonth() + 1; // getMonth() 返回的月份是从0开始的
-	const day = now.getDate();
-	const hours = now.getHours();
-	const minutes = now.getMinutes();
-	const seconds = now.getSeconds();
-
-	// 将单个数字格式化为两位数（例如，1 -> 01）
-	const formatNumber = (n) => n < 10 ? '0' + n : n;
-
-	// 拼接成字符串，去掉文件后缀
-	const fileName = `${year}${formatNumber(month)}${formatNumber(day)}${formatNumber(hours)}${formatNumber(minutes)}${formatNumber(seconds)}`;
-
-	return fileName;
 }
 
 function openLink(engine, text) {
