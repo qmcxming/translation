@@ -14,3 +14,6 @@ unpackage/dist/dev/
 
 # python
 *.pyc
+
+# Audio cache
+*.mp3

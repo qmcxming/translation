@@ -2,6 +2,9 @@ const hx = require("hbuilderx");
 const path = require('path');
 const { translate, getLanguagePair } = require('./translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('./settings');
+const { EdgeTTS } = require('node-edge-tts');
+const fs = require('fs');
+const tts = new EdgeTTS();
 
 const staticPath = path.join(__dirname, 'static');
 
@@ -53,6 +56,48 @@ function showTranslationDialog() {
 			<link rel="stylesheet" href="${staticPath}/css/select.css">
 			<link rel="stylesheet" href="${staticPath}/css/accordion.css">
 			<style>
+				/* 全局滚动条样式 */
+				:root {
+					/* 滚动条宽度 */
+					--scrollbar-width: 12px;
+					/* 滚动条滑块颜色 */
+					--scrollbar-thumb-color: #888;
+					/* 滚动条轨道颜色 */
+					--scrollbar-track-color: #f1f1f1;
+					/* 滚动条滑块圆角 */
+					--scrollbar-thumb-radius: 6px;
+					/* 滚动条滑块边框 */
+					--scrollbar-thumb-border: 3px solid #f1f1f1;
+				}
+		
+				/* 滚动条轨道 */
+				::-webkit-scrollbar {
+					width: var(--scrollbar-width);
+				}
+		
+				/* 滚动条滑块 */
+				::-webkit-scrollbar-thumb {
+					background-color: var(--scrollbar-thumb-color);
+					border-radius: var(--scrollbar-thumb-radius);
+					border: var(--scrollbar-thumb-border);
+				}
+		
+				/* 滚动条轨道背景 */
+				::-webkit-scrollbar-track {
+					background: var(--scrollbar-track-color);
+					border-radius: var(--scrollbar-thumb-radius);
+				}
+		
+				/* 鼠标悬停在滚动条上时的滑块样式 */
+				::-webkit-scrollbar-thumb:hover {
+					background-color: #555;
+				}
+		
+				/* Firefox 滚动条样式 */
+				html {
+					scrollbar-width: thin;
+					scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+				}
 				#container {
 					display: flex;
 					justify-content: space-evenly;
@@ -196,7 +241,7 @@ function showTranslationDialog() {
 			
 				#from-phonetic, #to-phonetic {
 					margin-left: 8px;
-					max-width: 150px;
+					max-width: 135px;
 					font-size: 13px;
 					/* 超出显示... */
 					overflow: hidden;
@@ -207,6 +252,7 @@ function showTranslationDialog() {
 				.tooltip {
 					position: relative;
 					display: inline-block;
+					flex: 1;
 				}
 				
 				.tooltip .tooltiptext {
@@ -259,6 +305,27 @@ function showTranslationDialog() {
 				#fromSelect {
 					align-items: center;
 				}
+				
+				.sound-icon {
+					width: 20px;
+					margin-left: 8px;
+					cursor: pointer;
+					transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 弹性曲线 */
+					transform: scale(1); /* 初始缩放 */
+					opacity: 0.5;
+					pointer-events: none;
+				}
+				
+				/* sound loading 旋转 */
+				@keyframes spin {
+					from {
+						transform: rotate(0deg);
+					}
+					to {
+						transform: rotate(360deg);
+					}
+				}
+		
 			</style>
 		</head>
 		
@@ -280,10 +347,13 @@ function showTranslationDialog() {
 				</div>
 			</div>
 			<div id="container">
+				<!-- 隐藏输入框，存放默认icons路径 -->
+				<input type="text" value="${staticPath}/icons/" id="defaultUrl" style="display:none;">
 				<div id="toast-container"></div>
 				<div class="textarea-box">
-					<textarea autofocus class="textarea" name="text" id="text" cols="30" rows="10"></textarea>
+					<textarea autofocus class="textarea" oninput="inputChange(this, 'from')" name="text" id="text" cols="30" rows="10"></textarea>
 					<div class="textarea-bottom-toolbar">
+						<img onclick="playSound(this, 'from')" id="fromSound" class="sound-icon" url="" src="${staticPath}/icons/sound.svg" alt="发音">
 						<div class="tooltip">
 							<div id="from-phonetic"></div>
 							<span id="from-phonetic-tip" class="tooltiptext"></span>
@@ -299,6 +369,7 @@ function showTranslationDialog() {
 				<div class="textarea-box">
 					<textarea class="textarea" name="result" id="result" cols="30" rows="10" readonly></textarea>
 					<div class="textarea-bottom-toolbar">
+						<img onclick="playSound(this, 'to')" id="toSound" class="sound-icon" url="" src="${staticPath}/icons/sound.svg" alt="发音">
 						<div class="tooltip">
 							<div id="to-phonetic"></div>
 							<span id="to-phonetic-tip" class="tooltiptext"></span>
@@ -314,7 +385,7 @@ function showTranslationDialog() {
 			</div>
 			<div class="accordion" id="accordion">
 				<div class="accordion-header" onclick="toggleAccordion()">
-					<span></span>
+					<span id="message"></span>
 					<span id="accordion-icon-google" class="accordion-icon">▶</span>
 				</div>
 				<div class="accordion-content" id="accordion-content">
@@ -339,10 +410,21 @@ function showTranslationDialog() {
 					// 接收消息
 					hbuilderx.onDidReceiveMessage((res) => {
 						console.log(res);
-						const { data, error, content, from, to } = res;
+						const { data, error, content, from, to, ft } = res;
+						if ((ft === 'from') || (ft === 'to')) {
+							console.log(ft, data);
+							const audio = document.getElementById(ft + 'Sound');
+							audio.setAttribute('url', data);
+							loadingStatus(audio, false);
+							document.getElementById('message').textContent = '';
+							playSound(audio, ft);
+							return;
+						}
 						if (content) {
 							document.getElementById('text').value = content;
-							
+							// to音频置为可使用
+							document.getElementById('fromSound').style.pointerEvents = 'auto';
+							document.getElementById('fromSound').style.opacity = 1;
 							setSelectOption(from, to).then(() => {
 								console.log('选中完成，执行下面的代码');
 								toTranslate();
@@ -354,6 +436,12 @@ function showTranslationDialog() {
 							return showToast(error);
 						};
 						document.getElementById('result').value = data.dst;
+						// to音频置为可使用
+						document.getElementById('toSound').style.pointerEvents = 'auto';
+						document.getElementById('toSound').style.opacity = 1;
+						// 重置音频
+						document.getElementById('fromSound').setAttribute('url', '');
+						document.getElementById('toSound').setAttribute('url', '');
 						// 设置auto模式下 检测的语种[阿里翻译不能使用, 所以多做了判断]
 						const detectLanguage = document.getElementById('detect-language');
 						if((data.from !== 'auto') && (document.getElementById('selectedLabel1').getAttribute('data-value') === 'auto')) {
@@ -457,6 +545,7 @@ function showTranslationDialog() {
 					if (isEmpty(text.value)) return;
 					text.value = '';
 					document.getElementById('result').value = '';
+					reset();
 				}
 				window.addEventListener("hbuilderxReady", initReceive);
 				
@@ -598,6 +687,123 @@ function showTranslationDialog() {
 						document.getElementById('no-data').style.display = 'block';
 					}
 				}
+				
+				let audioElement1;
+					let audioElement2;
+					let audio1;
+					let audio2;
+				
+				function playSound(audio, ft) {
+					console.log(audio, ft);
+					const audioUrl = audio.getAttribute('url');
+					console.log(audioUrl);
+			
+					// 选择音频元素和全局音频对象
+					const targetAudio = (ft === 'from') ? audio1 : audio2;
+					const targetAudioElement = (ft === 'from') ? audioElement1 : audioElement2;
+			
+					// 如果音频没有url，发起请求
+					if (isEmpty(audioUrl)) {
+						console.log('请求audio数据');
+						// 数据格式：{ command: "getAudio", data: text, ft: ft }
+						loadingStatus(audio, true);
+						const text = ft === 'from' ? document.getElementById('text').value : document.getElementById('result').value;
+						// 没有音频URL时不继续执行
+						document.getElementById('message').textContent = '正在获取音频...';
+						hbuilderx.postMessage({ command: 'getAudio', data: text, ft: ft })
+						return;
+					}
+			
+					// 如果另一方的音频正在播放，暂停
+					const otherAudioElement = (ft === 'from') ? audioElement2 : audioElement1;
+					const otherAudio = (ft === 'from') ? audio2 : audio1;
+			
+					if (otherAudioElement && !otherAudioElement.paused) {
+						otherAudioElement.pause();
+						if (otherAudio) checkSoundStatus(otherAudio, false);
+					}
+			
+					// 更新当前播放状态
+					console.log('开始播放');
+					checkSoundStatus(audio, true);
+			
+					// 播放音频
+					const audioElement = new Audio(audioUrl);
+					if (ft === 'from') {
+						audioElement1 = audioElement;
+						audio1 = audio;
+					} else {
+						audioElement2 = audioElement;
+						audio2 = audio;
+					}
+			
+					audioElement.play();
+					audioElement.onended = function() {
+						console.log('播放结束');
+						// 播放结束后，移除播放状态
+						checkSoundStatus(audio, false);
+					};
+				}
+				
+				// 加载状态切换
+				function loadingStatus(audio, status) {
+					if (status) {
+						audio.src = document.getElementById('defaultUrl').value + 'loading.svg';
+						audio.style.pointerEvents = 'none';
+						audio.style.opacity = 0.5;
+						// 图标旋转
+						audio.style.animation = 'spin 1s linear infinite';
+					} else {
+						audio.style.pointerEvents = 'auto';
+						audio.style.opacity = 1;
+						audio.style.animation = '';
+					}
+				}
+				
+				function checkSoundStatus(audio, isPlaying) {
+					const defaultUrl = document.getElementById('defaultUrl').value;
+					if (isPlaying) {
+						audio.setAttribute('src', defaultUrl + 'end.svg');
+						audio.style.transform = 'scale(1.4)'; // 放大
+						setTimeout(() => {
+							audio.style.transform = 'scale(1)'; // 恢复初始大小
+						}, 500); // 与过渡时间一致
+					} else {
+						audio.setAttribute('src', defaultUrl + 'sound.svg');
+					}
+				}
+				
+				function inputChange(textarea, ft) {
+					console.log(textarea.id,textarea)
+					const sound = document.getElementById(ft + 'Sound')
+					if (textarea.value.length === 0) {
+						sound.style.pointerEvents = 'none';
+						sound.style.opacity = 0.5;
+						// 音频置空
+						sound.setAttribute('url', '');
+					} else {
+						sound.style.pointerEvents = 'auto';
+						sound.style.opacity = 1;
+					}
+				}
+				
+				function reset() {
+					const elements = [
+						{ id: 'fromSound', phoneticId: 'from-phonetic' },
+						{ id: 'toSound', phoneticId: 'to-phonetic' }
+					];
+				
+					elements.forEach(element => {
+						const el = document.getElementById(element.id);
+						const phoneticEl = document.getElementById(element.phoneticId);
+				
+						el.setAttribute('url', '');
+						el.style.pointerEvents = 'none';
+						el.style.opacity = 0.5;
+				
+						phoneticEl.textContent = '';
+					});
+				}
 			</script>
 		</body>
 		
@@ -627,12 +833,67 @@ function showTranslationDialog() {
 		if (msg.command === 'openLink') {
 			openLink(msg.engine, msg.text);
 		}
+		if (msg.command === 'getAudio') {
+			getAudio(msg.data, msg.ft).then(res => {
+				console.log(res);
+				webview.postMessage({ data: res, ft: msg.ft });
+			}).catch(e => {
+				webview.postMessage(e);
+			});
+		}
 	});
 
 	let promi = webviewDialog.show();
 	promi.then(function(data) {
 		// 处理错误信息
 	});
+}
+
+async function getAudio(data, ft) {
+	const timestamp = Date.now();
+	// TODO 文件名后续可以采用md5加密，便于判断文件是否存在，若是存在直接返回即可
+	// 缓存，减少请求次数
+	let audioUrl = `${staticPath}/audio/${ft}-${generateDateTime()}.mp3`
+	// 清理audio前一天的文件
+	const files = fs.readdirSync(`${staticPath}/audio`);
+	files.forEach(file => {
+		const filePath = `${staticPath}/audio/${file}`;
+		const fileStat = fs.statSync(filePath);
+		const fileTime = fileStat.mtime.getTime();
+		// 删除24小时前的文件
+		if (fileTime < (timestamp - 24 * 60 * 60 * 1000)) {
+			fs.unlinkSync(filePath);
+		}
+	});
+	try {
+		await tts.ttsPromise(data, audioUrl).then(() => {
+			console.log('tts成功')
+		})
+	} catch(e){
+		return e;
+	}
+	return audioUrl;
+}
+
+function generateDateTime() {
+	// 创建一个新的Date对象，代表当前时间
+	const now = new Date();
+
+	// 获取年、月、日、小时、分钟和秒
+	const year = now.getFullYear();
+	const month = now.getMonth() + 1; // getMonth() 返回的月份是从0开始的
+	const day = now.getDate();
+	const hours = now.getHours();
+	const minutes = now.getMinutes();
+	const seconds = now.getSeconds();
+
+	// 将单个数字格式化为两位数（例如，1 -> 01）
+	const formatNumber = (n) => n < 10 ? '0' + n : n;
+
+	// 拼接成字符串，去掉文件后缀
+	const fileName = `${year}${formatNumber(month)}${formatNumber(day)}${formatNumber(hours)}${formatNumber(minutes)}${formatNumber(seconds)}`;
+
+	return fileName;
 }
 
 function openLink(engine, text) {

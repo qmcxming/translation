@@ -153,7 +153,8 @@
 				}
 			}
 		},
-		"commands": [{
+		"commands": [
+			{
 				"command": "extension.translation",
 				"title": "翻译"
 			},
@@ -167,7 +168,8 @@
 			}
 		],
 		"menus": {
-			"editor/context": [{
+			"editor/context": [
+				{
 					"command": "extension.translation",
 					"group": "z_commands",
 					"when": "editorHasSelection"
@@ -187,7 +189,8 @@
 				}
 			]
 		},
-		"keybindings": [{
+		"keybindings": [
+			{
 				"command": "extension.translation",
 				"key": "Ctrl+Shift+Y",
 				"when": "editorHasSelection",
@@ -213,6 +216,7 @@
 	"dependencies": {
 		"axios": "^1.7.2",
 		"change-case-all": "^2.1.0",
+		"node-edge-tts": "^1.2.7",
 		"qs": "^6.12.3"
 	}
 }
