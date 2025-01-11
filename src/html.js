@@ -1,10 +1,12 @@
 const hx = require("hbuilderx");
 const path = require('path');
-const { translate, getLanguagePair } = require('./translate');
-const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('./settings');
-const { EdgeTTS } = require('node-edge-tts');
 const fs = require('fs');
 const crypto = require('crypto');
+const { EdgeTTS } = require('node-edge-tts');
+
+const { translate, getLanguagePair } = require('./translate');
+const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('./settings');
+const { getCacheUrl } = require('./cache');
 const tts = new EdgeTTS();
 
 const staticPath = path.join(__dirname, 'static');
@@ -39,7 +41,7 @@ function showTranslationDialog() {
 		description: te ? te : translationEngine,
 		size: {
 			width: 630,
-			height: 495
+			height: 500
 		}
 	}, {
 		enableScripts: true
@@ -328,7 +330,6 @@ function showTranslationDialog() {
 						transform: rotate(360deg);
 					}
 				}
-		
 			</style>
 		</head>
 		
@@ -716,16 +717,17 @@ function generateMD5(input) {
 
 async function getAudio(data, ft) {
 	const timestamp = Date.now();
+	const audioCacheDir = getCacheUrl('audio');
 	// 缓存，减少请求次数
-	let audioUrl = `${staticPath}/audio/${generateMD5(data)}.mp3`;
+	let audioUrl = path.join(audioCacheDir, `${generateMD5(data)}.mp3`)
 	if (fs.existsSync(audioUrl)) {
 		console.log('使用缓存audio咯');
 		return audioUrl;
 	}
 	// 清理audio前一天的文件
-	const files = fs.readdirSync(`${staticPath}/audio`);
+	const files = fs.readdirSync(audioCacheDir);
 	files.forEach(file => {
-		const filePath = `${staticPath}/audio/${file}`;
+		const filePath = path.join(audioCacheDir, file);
 		const fileStat = fs.statSync(filePath);
 		const fileTime = fileStat.mtime.getTime();
 		// 删除24小时前的文件
