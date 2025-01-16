@@ -1,10 +1,25 @@
 const hx = require("hbuilderx");
-const { camelCase, pascalCase, snakeCase, constantCase, kebabCase, sentenceCase, upperCase, lowerCase } =
-require(
-	'change-case-all');
-const { showTranslationDialog } = require('./html');
+const {
+	camelCase,
+	pascalCase,
+	snakeCase,
+	constantCase,
+	kebabCase,
+	sentenceCase,
+	upperCase,
+	lowerCase
+} = require('change-case-all');
+const { showTranslationDialog } = require('./webview/html');
 const { translate, detectLanguage, getLanguagePair } = require('./translate');
-const { getTranslationEngine, getSecret, getGoogleServerUrl, getHideTime, getAlibabaVS, getTranslationMode } = require('./settings');
+const { 
+	getTranslationEngine, 
+	getSecret, 
+	getGoogleServerUrl, 
+	getHideTime, 
+	getAlibabaVS, 
+	getTranslationMode 
+} = require('./settings');
+const { showWordMappingDialog, getMapping } = require('./webview/wordmp');
 
 function translation() {
 	let editorPromise = hx.window.getActiveTextEditor();
@@ -12,10 +27,15 @@ function translation() {
 		// 获取文本
 		const text = editor.document.getText(editor.selection);
 		hx.window.setStatusBarMessage('正在翻译中...');
-		const dst = await getTranslationContent(text);
+		// 单词映射
+		let dst = getMapping(text);
+		if(!dst) {
+			dst = await getTranslationContent(text);
+		}
 		if (dst) {
-			if(getTranslationMode()) {
-				hx.window.showInformationMessage(`<font color="#3574F0">${text}</font><p>${dst}</p>`, ['复制'])
+			if (getTranslationMode()) {
+				hx.window.showInformationMessage(`<font color="#3574F0">${text}</font><p>${dst}</p>`, [
+						'复制'])
 					.then(res => hx.env.clipboard.writeText(dst));
 			} else {
 				hx.window.setStatusBarMessage(dst, getHideTime());
@@ -135,7 +155,10 @@ function showTranslationReplace() {
 			}
 		}
 		if (detectLanguage(text)) { // 中文 -> 翻译 -> 转换
-			text = await getTranslationContent(text);
+			text = getMapping(text);
+			if(!text) {
+				text = await getTranslationContent(text);
+			}
 		}
 		const items = template.map(item => ({
 			label: item.label,
@@ -204,5 +227,6 @@ module.exports = {
 	showTranslationDialog,
 	setTranslationStatusBar,
 	clearTranslationStatusBar,
-	showTranslationReplace
+	showTranslationReplace,
+	showWordMappingDialog
 }

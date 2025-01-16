@@ -4,9 +4,10 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { EdgeTTS } = require('node-edge-tts');
 
-const { translate, getLanguagePair } = require('./translate');
-const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('./settings');
-const { getCacheUrl } = require('./cache');
+const { translate, getLanguagePair } = require('../translate');
+const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('../settings');
+const { getCacheUrl } = require('../cache');
+const { getMapping } = require('./wordmp');
 const tts = new EdgeTTS();
 
 const staticPath = path.join(__dirname, 'static');
@@ -685,6 +686,12 @@ function showTranslationDialog() {
 				version,
 				scene
 			).then(res => {
+				// 为了兼顾其他功能，翻译对话框的单词映射功能，不止返回映射结果，还返回翻译结果
+				const mp = getMapping(data);
+				if (mp) {
+					res.dst = mp;
+					res.detail.toPhonetic = '';
+				};
 				webview.postMessage({ data: res });
 			}).catch(e => {
 				webview.postMessage(e);

@@ -1,0 +1,317 @@
+body {
+	font-family: "Arial", "Helvetica Neue", sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #333;
+}
+
+/* TODO 后续需要替换，统一ui */
+/* ------------- 开始 ------------- */
+
+/* 文本输入框 */
+textarea {
+	border: none;
+	outline: none;
+	padding: 0;
+	margin: 0;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-image: none;
+	background-color: transparent;
+	font-size: inherit;
+}
+
+textarea:focus {
+	outline: none;
+}
+
+/* 自定义样式 */
+textarea {
+	display: inline-block;
+	resize: vertical;
+	padding: 5px 15px;
+	line-height: 1.5;
+	box-sizing: border-box;
+	color: #606266;
+	background-color: #fff;
+	border: 1px solid #dcdfe6;
+	border-radius: 4px;
+	transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* 提示文字 */
+textarea::placeholder {
+	color: #c0c4cc;
+}
+
+/* 鼠标hover */
+textarea:hover {
+	border-color: #c0c4cc;
+}
+
+/* 获得焦点 */
+textarea:focus {
+	border-color: #409EFF;
+}
+
+/* 按钮 */
+button {
+	background-color: #409eff;
+	border: 1px solid #409EFF;
+	color: #fff;
+	padding: 5px 10px;
+	border-radius: 2px;
+	cursor: pointer;
+	font-size: 14px;
+	margin: 0 10px;
+	transition: background-color 0.3s;
+}
+
+button:hover {
+	background-color: #66b1ff;
+}
+
+button:active {
+	background-color: #3a8ee6;
+}
+
+button:disabled {
+	background-color: #c0c4cc;
+	cursor: not-allowed;
+}
+
+.button--plain {
+	background: #fff;
+	border-color: #dcdfe6;
+	color: #606266;
+}
+
+.button--plain:hover {
+	background: #fff;
+	border-color: #409EFF;
+	color: #409EFF;
+}
+
+/* ------------- 结束 ------------- */
+
+#data-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0;
+}
+
+#data-table .row {
+	display: flex;
+	align-items: center;
+	padding: 10px;
+	box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+	margin-bottom: 10px;
+}
+
+#data-table .row:hover:not(.selected) {
+	background-color: #f9f9f9;
+}
+
+.row.selected {
+	background-color: #e6f7ff;
+	color: #409EFF;
+	cursor: default;
+	/* 选中后禁用 hover 效果 */
+}
+
+#data-table span {
+	margin-right: 10px;
+	/* 限定宽度，溢出显示... */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 150px;
+}
+
+.original {
+	/* 指针小手 */
+	cursor: pointer;
+}
+
+/* #data-table span:first-child {
+	display: none;
+} */
+
+#data-table span:nth-child(3) {
+	font-weight: bold;
+	color: #333;
+}
+
+#data-table span:nth-child(4) {
+	color: #555;
+}
+
+#data-table span:last-child {
+	color: #888;
+	font-size: 0.9em;
+	margin-left: auto;
+}
+
+.tool-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+}
+
+#delete-row {
+	background-color: #f56c6c;
+	border-color: #f56c6c;
+}
+
+#delete-row:hover {
+	background-color: #f78989;
+	border-color: #f78989;
+}
+
+#delete-row:active {
+	background-color: #dd6161;
+	border-color: #dd6161;
+}
+
+#delete-row:disabled {
+	background-color: #c0c4cc;
+	border-color: #c0c4cc;
+}
+
+#no-data {
+	text-align: center;
+	color: #999;
+	font-size: 13px;
+	line-height: 300px;
+}
+
+.container {
+	height: 300px;
+	overflow: auto;
+	padding: 5px;
+}
+
+.tool-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 10px;
+	position: fixed;
+	bottom: 5px;
+	width: 100%;
+	z-index: 999;
+}
+
+.tool {
+	display: flex;
+	align-items: center;
+	background-color: #fff;
+	border-radius: 3px;
+	box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+	padding: 6px;
+}
+
+.dialog {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	opacity: 0;
+	z-index: -1;
+	transition: opacity 0.3s;
+}
+
+.dialog-title {
+	width: inherit;
+	align-self: flex-start;
+	display: flex;
+	justify-content: space-between;
+	/* 不可选中 */
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.dialog-title #title {
+	margin-left: 7px;
+}
+
+.dialog-title #close {
+	margin-right: 7px;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.dialog-title #close:hover {
+	/* 变淡 */
+	opacity: 0.7;
+}
+
+.dialog-content {
+	background-color: #fff;
+	padding: 10px;
+	border-radius: 5px;
+	width: 440px;
+	height: 300px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.dialog-content h2 {
+	margin-top: 0;
+}
+
+.dialog-content p {
+	margin-bottom: 10px;
+}
+
+.dialog .dialog-body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.dialog-row {
+	display: flex;
+}
+
+.dr1 {
+	flex: 1;
+	align-items: center;
+}
+
+.dr2 {
+	justify-content: flex-end;
+}
+
+.dr2 #save {
+	margin-right: 5px;
+}
+
+.dr2 #cancel {
+	margin-right: 0px;
+}
+
+#source,
+#target {
+	height: 90%;
+	width: 200px;
+	resize: none;
+}
+
+#simple-tip {
+	height: 40px;
+	text-align: right;
+	line-height: 105px;
+	font-size: 12px;
+	color: #4E5969;
+	letter-spacing: 1px;
+}
