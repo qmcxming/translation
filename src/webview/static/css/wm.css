@@ -5,95 +5,13 @@ body {
 	color: #333;
 }
 
-/* TODO 后续需要替换，统一ui */
-/* ------------- 开始 ------------- */
-
-/* 文本输入框 */
-textarea {
-	border: none;
-	outline: none;
-	padding: 0;
-	margin: 0;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	background-image: none;
-	background-color: transparent;
-	font-size: inherit;
-}
-
-textarea:focus {
-	outline: none;
-}
-
-/* 自定义样式 */
-textarea {
-	display: inline-block;
-	resize: vertical;
-	padding: 5px 15px;
-	line-height: 1.5;
-	box-sizing: border-box;
-	color: #606266;
-	background-color: #fff;
-	border: 1px solid #dcdfe6;
-	border-radius: 4px;
-	transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-}
-
-/* 提示文字 */
-textarea::placeholder {
-	color: #c0c4cc;
-}
-
-/* 鼠标hover */
-textarea:hover {
-	border-color: #c0c4cc;
-}
-
-/* 获得焦点 */
-textarea:focus {
-	border-color: #409EFF;
-}
-
-/* 按钮 */
 button {
-	background-color: #409eff;
-	border: 1px solid #409EFF;
-	color: #fff;
 	padding: 5px 10px;
 	border-radius: 2px;
-	cursor: pointer;
-	font-size: 14px;
 	margin: 0 10px;
-	transition: background-color 0.3s;
+	font-weight: normal;
+	width: auto;
 }
-
-button:hover {
-	background-color: #66b1ff;
-}
-
-button:active {
-	background-color: #3a8ee6;
-}
-
-button:disabled {
-	background-color: #c0c4cc;
-	cursor: not-allowed;
-}
-
-.button--plain {
-	background: #fff;
-	border-color: #dcdfe6;
-	color: #606266;
-}
-
-.button--plain:hover {
-	background: #fff;
-	border-color: #409EFF;
-	color: #409EFF;
-}
-
-/* ------------- 结束 ------------- */
 
 #data-table {
 	width: 100%;
@@ -177,6 +95,8 @@ button:disabled {
 #delete-row:disabled {
 	background-color: #c0c4cc;
 	border-color: #c0c4cc;
+	/* 禁止点击 */
+	cursor: not-allowed;
 }
 
 #no-data {
@@ -224,7 +144,6 @@ button:disabled {
 	align-items: center;
 	opacity: 0;
 	z-index: -1;
-	transition: opacity 0.3s;
 }
 
 .dialog-title {
@@ -314,4 +233,147 @@ button:disabled {
 	font-size: 12px;
 	color: #4E5969;
 	letter-spacing: 1px;
+}
+
+/* 遮罩层样式 */
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 999;
+	opacity: 0;
+	animation-fill-mode: forwards;
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fade-out {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+	}
+}
+
+.overlay.show {
+	animation: fade-in 0.3s ease;
+}
+
+.overlay.hide {
+	animation: fade-out 0.3s ease;
+}
+
+/* 提示框 */
+/* 消息弹出框样式 */
+.hidden {
+	display: none;
+}
+
+.message-box {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 420px;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 1000;
+	opacity: 0;
+	animation-fill-mode: forwards;
+}
+
+@keyframes slide-in {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -60%);
+	}
+
+	to {
+		opacity: 1;
+		transform: translate(-50%, -50%);
+	}
+}
+
+@keyframes slide-out {
+	from {
+		opacity: 1;
+		transform: translate(-50%, -50%);
+	}
+
+	to {
+		opacity: 0;
+		transform: translate(-50%, -60%);
+	}
+}
+
+.message-box.show {
+	animation: slide-in 0.3s ease;
+}
+
+.message-box.hide {
+	animation: slide-out 0.3s ease;
+}
+
+.message-box-header {
+	padding: 10px;
+	font-size: 16px;
+	/* border-bottom: 1px solid #ebeef5; */
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.message-box-header .close {
+	font-size: 20px;
+	cursor: pointer;
+	color: #909399;
+	transition: color 0.3s ease;
+}
+
+.message-box-header .close:hover {
+	opacity: 0.7;
+}
+
+.message-box-body {
+	padding: 10px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+}
+
+.message-box-body .icon {
+	font-size: 20px;
+}
+
+.message-box-body p {
+	font-size: 14px;
+	color: #606266;
+	margin: 0;
+	margin-left: 5px;
+}
+
+.message-box-footer {
+	padding: 15px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	/* border-top: 1px solid #ebeef5; */
+}
+
+.message-box-footer .confirm {
+	margin: 0;
 }

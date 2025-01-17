@@ -116,9 +116,11 @@ function showWordMappingDialog() {
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>单词映射</title>
+		<link rel="stylesheet" href="${staticPath}/css/common.css">
 		<link rel="stylesheet" href="${staticPath}/css/wm.css">
 	</head>
 	<body>
+	<div id="toast-container"></div>
 	<div class="container">
 		<div id="data-table">
 		
@@ -127,7 +129,7 @@ function showWordMappingDialog() {
 	</div>
 	<div class="tool-container">
 		<div class="tool">
-			<button id="add-row">添加</button>
+			<button id="add-row" onclick="showDialog()">添加</button>
 			<button id="delete-row" disabled>删除</button>
 		</div>
 	</div>
@@ -135,7 +137,7 @@ function showWordMappingDialog() {
 		<div class="dialog-content">
 			<div class="dialog-title">
 				<span id="title">单词映射</span>
-				<span id="close">×</span>
+				<span id="close" onclick="closeDialog()">×</span>
 			</div>
 			<div class="dialog-body">
 				<div class="dialog-row dr1">
@@ -145,13 +147,30 @@ function showWordMappingDialog() {
 					<textarea id="target" placeholder="请输入目标单词"></textarea>
 				</div>
 				<div class="dialog-row dr2">
-					<button id="save">保存</button>
-					<button class="button--plain" id="cancel">取消</button>
+					<button id="save" onclick="saveWordMapping()">保存</button>
+					<button class="button--plain" id="cancel" onclick="closeDialog()">取消</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	<!-- 遮罩层 -->
+	<div id="overlay" class="overlay hidden" onclick="closeMessageBox()"></div>
 	<div id="simple-tip"></div>
+	<div id="message-box" class="message-box hidden">
+		<div class="message-box-header">
+			<span class="message-title">提示</span>
+			<span class="close" onclick="closeMessageBox()">×</span>
+		</div>
+		<div class="message-box-body">
+			<div class="icon warning-icon">🔥️</div>
+			<p></p>
+		</div>
+		<div class="message-box-footer">
+			<button class="confirm" onclick="confirmAction()">确定</button>
+			<button class="cancel button--plain" onclick="closeMessageBox()">取消</button>
+		</div>
+	</div>
+	<script src="${staticPath}/js/toast.js"></script>
 	<script src="${staticPath}/js/wm.js"></script>
 	</body>
 	</html>

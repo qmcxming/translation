@@ -1,108 +1,236 @@
-/* 去除默认样式 */
-textarea {
-	border: none;
-	outline: none;
-	padding: 0;
-	margin: 0;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	background-image: none;
-	background-color: transparent;
-	font-size: inherit;
+#container {
+	display: flex;
+	justify-content: space-evenly;
 }
 
-textarea:focus {
-	outline: none;
+.textarea-box {
+	position: relative;
+	flex: 2;
 }
 
-/* 自定义样式 */
-textarea {
-	display: inline-block;
-	resize: vertical;
-	padding: 5px 15px;
-	line-height: 1.5;
-	box-sizing: border-box;
-	color: #606266;
-	background-color: #fff;
-	border: 1px solid #dcdfe6;
-	border-radius: 4px;
-	transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-}
-
-/* 提示文字 */
-textarea::placeholder {
-	color: #c0c4cc;
-}
-
-/* 鼠标hover */
-textarea:hover {
-	border-color: #c0c4cc;
-}
-
-/* 获得焦点 */
-textarea:focus {
-	border-color: #409EFF;
-}
-
-button {
-	display: inline-block;
-	font-weight: bold;
-	line-height: 1;
-	white-space: nowrap;
-	background: #409EFF;
-	border: 1px solid #409EFF;
-	color: #fff;
-	text-align: center;
+.delete-icon {
+	width: 20px;
+	height: 20px;
+	/* position: absolute;
+					right: -1px;
+					bottom: 2px; */
 	cursor: pointer;
-	transition: 0.3s;
-	font-size: 14px;
-	border-radius: 4px;
-	padding: 12px 20px;
+}
+
+.textarea {
+	/* 限制拖动大小 */
+	resize: none;
 	width: 100%;
+	height: 100%;
+	/* 空出输入框工具栏的部分高度 */
+	padding-bottom: 20px;
 }
 
-button:hover {
-	background: #66b1ff;
-	border-color: #66b1ff;
+.feature {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 0 10px;
 }
 
-.button--plain {
-	background: #fff;
-	border-color: #dcdfe6;
-	color: #606266;
+.more {
+	/* position: absolute;
+					right: 0;
+					bottom: 0; */
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	font-size: 10px;
+	padding: 0;
 }
 
-.button--plain:hover {
-	background: #fff;
-	border-color: #409EFF;
+.popup {
+	position: absolute;
+	border: 1px solid #efefef;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+	background-color: #FFFFFF;
+	/* padding: 15px; */
+	border-radius: 5px;
+	width: 50px;
+	text-align: center;
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+	bottom: 40px;
+	right: 0px;
+}
+
+.popup.visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.hidden {
+	display: none;
+}
+
+.popup-item {
+	margin: 5px 0;
+	padding: 5px;
+	cursor: pointer;
+	color: #1f2f3d;
+	border-bottom: 1px solid #efefef;
+}
+
+.popup-item:last-child {
+	border-bottom: none;
+}
+
+.popup .popup-item:hover {
+	background-color: #ECF5FF;
 	color: #409EFF;
 }
 
-/* 样式定义 toast 提示框容器 */
-#toast-container {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	z-index: 1000;
+.select-container {
+	display: flex;
+	justify-content: space-between;
 }
 
-/* 样式定义单个 toast 提示框 */
-.toast {
-	background-color: #333;
-	color: #fff;
-	padding: 10px 20px;
-	margin: 5px;
-	border-radius: 5px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.custom-select {
+	flex: 2;
+	display: flex;
+}
+
+.select-box {
+	flex: 1;
+	padding: 0 15px;
+	display: flex;
+	justify-content: center;
+}
+
+.exchange-icon {
+	width: 20px;
+}
+
+.category-content,
+.example-item {
+	text-indent: 1em;
+}
+
+.category-name,
+.example-text {
+	font-weight: bold;
+	font-style: italic;
+}
+
+.comma {
+	color: #2196F3;
+	margin: 0 5px 0 2px;
+}
+
+#example-container {
+	display: none;
+}
+
+.mt-10 {
+	margin-top: 10px;
+}
+
+.textarea-bottom-toolbar {
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	height: 30px;
+	/* background-color: hotpink; */
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+#from-phonetic,
+#to-phonetic {
+	margin-left: 8px;
+	max-width: 135px;
+	font-size: 13px;
+	/* 超出显示... */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.tooltip {
+	position: relative;
+	display: inline-block;
+	flex: 1;
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	background-color: white;
+	color: block;
+	border-radius: 3px;
+	padding: 5px;
+	position: absolute;
+	bottom: 100%;
+	max-width: 180px;
+	max-height: 240px;
+	word-wrap: break-word;
+	z-index: 1;
+	text-align: center;
+	overflow: auto;
+
+	/* 向上弹出 */
+	transform: translateY(20px);
 	opacity: 0;
-	transform: translateY(-20px);
 	transition: opacity 0.3s ease, transform 0.3s ease;
+	box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+	border: 1px solid #eaeaea;
+	font-size: 13px;
 }
 
-/* 当 toast 显示时应用的样式 */
-.toast.show {
+.tooltip:hover .tooltiptext {
+	visibility: visible;
 	opacity: 1;
-	transform: translateY(0);
+	transform: translateY(0px);
+}
+
+#no-data {
+	text-align: center;
+	font-size: 14px;
+	color: #999;
+	display: none;
+}
+
+#accordion-icon-google {
+	opacity: 0;
+}
+
+#detect-language {
+	font-size: 13px;
+	color: #6D6E71;
+	margin-left: 10px;
+}
+
+#fromSelect {
+	align-items: center;
+}
+
+.sound-icon {
+	width: 20px;
+	margin-left: 8px;
+	cursor: pointer;
+	transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+	/* 弹性曲线 */
+	transform: scale(1);
+	/* 初始缩放 */
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* sound loading 旋转 */
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
 }
