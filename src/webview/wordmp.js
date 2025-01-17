@@ -130,7 +130,7 @@ function showWordMappingDialog() {
 	<div class="tool-container">
 		<div class="tool">
 			<button id="add-row" onclick="showDialog()">添加</button>
-			<button id="delete-row" disabled>删除</button>
+			<button id="delete-row" onclick="showMessageBox()" disabled>删除</button>
 		</div>
 	</div>
 	<div class="dialog" id="ipt-dialog">
@@ -166,11 +166,12 @@ function showWordMappingDialog() {
 			<p></p>
 		</div>
 		<div class="message-box-footer">
-			<button class="confirm" onclick="confirmAction()">确定</button>
+			<button class="confirm" onclick="confirmDelete()">确定</button>
 			<button class="cancel button--plain" onclick="closeMessageBox()">取消</button>
 		</div>
 	</div>
 	<script src="${staticPath}/js/toast.js"></script>
+	<script src="${staticPath}/js/common.js"></script>
 	<script src="${staticPath}/js/wm.js"></script>
 	</body>
 	</html>

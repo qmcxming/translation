@@ -147,6 +147,7 @@ function showTranslationDialog() {
 			<script src="${staticPath}/js/common.js"></script>
 			<script src="${staticPath}/js/accordion.js"></script>
 			<script src="${staticPath}/languages/${translationEngine}-language.json"></script>
+			<script src="${staticPath}/js/translation.js"></script>
 			<script>
 				const defaultUrl = document.getElementById('defaultUrl');
 			

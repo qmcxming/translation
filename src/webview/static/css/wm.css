@@ -77,9 +77,14 @@ button {
 	margin-top: 20px;
 }
 
+.tool button {
+	margin: 0;
+}
+
 #delete-row {
 	background-color: #f56c6c;
 	border-color: #f56c6c;
+	margin: 0 0 0 10px;
 }
 
 #delete-row:hover {
@@ -211,11 +216,7 @@ button {
 	justify-content: flex-end;
 }
 
-.dr2 #save {
-	margin-right: 5px;
-}
-
-.dr2 #cancel {
+.dr2 #cancel, #save {
 	margin-right: 0px;
 }
 
@@ -370,7 +371,7 @@ button {
 	padding: 15px;
 	display: flex;
 	justify-content: flex-end;
-	gap: 10px;
+	/* gap: 10px; */
 	/* border-top: 1px solid #ebeef5; */
 }
 
