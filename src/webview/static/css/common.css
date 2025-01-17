@@ -41,6 +41,12 @@ html {
 	scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
 }
 
+body {
+	font-family: "Arial", "Helvetica Neue", sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
 /* 去除默认样式 */
 textarea {
 	border: none;
@@ -128,7 +134,7 @@ button:hover {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	z-index: 1000;
+	z-index: 1001;
 }
 
 /* 样式定义单个 toast 提示框 */

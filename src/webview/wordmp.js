@@ -133,7 +133,7 @@ function showWordMappingDialog() {
 			<button id="delete-row" onclick="showMessageBox()" disabled>删除</button>
 		</div>
 	</div>
-	<div class="dialog" id="ipt-dialog">
+	<div class="dialog hidden" id="ipt-dialog">
 		<div class="dialog-content">
 			<div class="dialog-title">
 				<span id="title">单词映射</span>
@@ -154,7 +154,7 @@ function showWordMappingDialog() {
 		</div>
 	</div>
 	<!-- 遮罩层 -->
-	<div id="overlay" class="overlay hidden" onclick="closeMessageBox()"></div>
+	<div id="overlay" class="overlay hidden" onclick="closeAll()"></div>
 	<div id="simple-tip"></div>
 	<div id="message-box" class="message-box hidden">
 		<div class="message-box-header">

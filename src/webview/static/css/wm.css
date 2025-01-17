@@ -1,14 +1,6 @@
-body {
-	font-family: "Arial", "Helvetica Neue", sans-serif;
-	margin: 0;
-	padding: 0;
-	color: #333;
-}
-
 button {
 	padding: 5px 10px;
 	border-radius: 2px;
-	margin: 0 10px;
 	font-weight: normal;
 	width: auto;
 }
@@ -35,7 +27,6 @@ button {
 	background-color: #e6f7ff;
 	color: #409EFF;
 	cursor: default;
-	/* 选中后禁用 hover 效果 */
 }
 
 #data-table span {
@@ -137,47 +128,49 @@ button {
 	padding: 6px;
 }
 
+.hidden {
+	display: none;
+}
+
+/* 遮罩层 */
 .dialog {
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 1000;
 	opacity: 0;
-	z-index: -1;
+	animation-fill-mode: forwards;
 }
 
-.dialog-title {
-	width: inherit;
-	align-self: flex-start;
-	display: flex;
-	justify-content: space-between;
-	/* 不可选中 */
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+@keyframes slide-in {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -60%);
+	}
+
+	to {
+		opacity: 1;
+		transform: translate(-50%, -50%);
+	}
 }
 
-.dialog-title #title {
-	margin-left: 7px;
+@keyframes slide-out {
+	from {
+		opacity: 1;
+		transform: translate(-50%, -50%);
+	}
+
+	to {
+		opacity: 0;
+		transform: translate(-50%, -60%);
+	}
 }
 
-.dialog-title #close {
-	margin-right: 7px;
-	font-size: 20px;
-	cursor: pointer;
-}
-
-.dialog-title #close:hover {
-	/* 变淡 */
-	opacity: 0.7;
-}
-
+/* 对话框内容 */
 .dialog-content {
 	background-color: #fff;
 	padding: 10px;
@@ -189,16 +182,39 @@ button {
 	align-items: center;
 }
 
-.dialog-content h2 {
-	margin-top: 0;
+.dialog.show {
+	animation: slide-in 0.3s ease;
 }
 
-.dialog-content p {
-	margin-bottom: 10px;
+.dialog.hide {
+	animation: slide-out 0.3s ease;
 }
 
-.dialog .dialog-body {
-	flex: 1;
+.dialog-title {
+	width: inherit;
+	align-self: flex-start;
+	display: flex;
+	justify-content: space-between;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.dialog-title #title {
+	margin-left: 5px;
+}
+
+.dialog-title #close {
+	font-size: 20px;
+	cursor: pointer;
+	margin-right: 5px;
+}
+
+.dialog-title #close:hover {
+	opacity: 0.7;
+}
+
+.dialog-body {
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 }
@@ -216,10 +232,6 @@ button {
 	justify-content: flex-end;
 }
 
-.dr2 #cancel, #save {
-	margin-right: 0px;
-}
-
 #source,
 #target {
 	height: 90%;
@@ -227,13 +239,8 @@ button {
 	resize: none;
 }
 
-#simple-tip {
-	height: 40px;
-	text-align: right;
-	line-height: 105px;
-	font-size: 12px;
-	color: #4E5969;
-	letter-spacing: 1px;
+#save {
+	margin-right: 5px;
 }
 
 /* 遮罩层样式 */
@@ -277,6 +284,36 @@ button {
 	animation: fade-out 0.3s ease;
 }
 
+#simple-tip {
+	height: 40px;
+	text-align: right;
+	line-height: 105px;
+	font-size: 12px;
+	color: #4E5969;
+	letter-spacing: 1px;
+}
+
+/* 遮罩层样式 */
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 999;
+	opacity: 0;
+	animation-fill-mode: forwards;
+}
+
+.overlay.show {
+	animation: fade-in 0.3s ease;
+}
+
+.overlay.hide {
+	animation: fade-out 0.3s ease;
+}
+
 /* 提示框 */
 /* 消息弹出框样式 */
 .hidden {
@@ -295,30 +332,6 @@ button {
 	z-index: 1000;
 	opacity: 0;
 	animation-fill-mode: forwards;
-}
-
-@keyframes slide-in {
-	from {
-		opacity: 0;
-		transform: translate(-50%, -60%);
-	}
-
-	to {
-		opacity: 1;
-		transform: translate(-50%, -50%);
-	}
-}
-
-@keyframes slide-out {
-	from {
-		opacity: 1;
-		transform: translate(-50%, -50%);
-	}
-
-	to {
-		opacity: 0;
-		transform: translate(-50%, -60%);
-	}
 }
 
 .message-box.show {
@@ -376,5 +389,5 @@ button {
 }
 
 .message-box-footer .confirm {
-	margin: 0;
+	margin-right: 10px;
 }

@@ -38,8 +38,7 @@ function renderTable() {
 			$('#source').value = dataList[index].original;
 			$('#target').value = dataList[index].translation;
 			$('#dataId').value = dataList[index].id;
-			dialog.style.opacity = '1';
-			dialog.style.zIndex = '999';
+			openDialog();
 			$('#title').innerHTML = '修改单词映射';
 		};
 		original.onmouseover = setSimpleTip
@@ -49,10 +48,13 @@ function renderTable() {
 	});
 }
 
+function closeAll() {
+	closeDialog();
+	closeWarning();
+}
+
 function showDialog() {
-	const dialog = $("#ipt-dialog");
-	dialog.style.opacity = '1';
-	dialog.style.zIndex = '999';
+	openDialog();
 	$('#source').value = '';
 	$('#target').value = '';
 	$('#dataId').value = '';
@@ -76,15 +78,55 @@ function saveWordMapping() {
 	showToast(id ? '修改成功' : '新增成功');
 }
 
-function showMessageBox () {
+function showMessageBox() {
 	// 确定删除吗
-	showWarning(`确定删除 <b>${checkedRows.length}</b> 条数据吗`);
+	openWarning(`确定删除 <b>${checkedRows.length}</b> 条数据吗`);
+}
+
+// 打开对话框
+function openDialog() {
+	const dialog = $("#ipt-dialog");
+	const overlay = $('#overlay');
+	// 显示遮罩层和弹出框
+	overlay.classList.remove('hidden', 'hide');
+	overlay.classList.add('show');
+	dialog.classList.remove('hidden', 'hide');
+	dialog.classList.add('show');
+	
+	// 确保移除动画结束后的状态避免冲突
+	dialog.addEventListener('animationend', function handleAnimationEnd(event) {
+		if (event.animationName === 'slide-in') {
+			dialog.style.opacity = 1;
+			overlay.style.opacity = 1;
+		}
+		dialog.removeEventListener('animationend', handleAnimationEnd);
+	});
 }
 
 function closeDialog() {
 	const dialog = $('#ipt-dialog');
-	dialog.style.opacity = '0';
-	dialog.style.zIndex = '-1';
+	const overlay = $('#overlay');
+	// 隐藏弹出框和遮罩层
+	dialog.classList.remove('show');
+	dialog.classList.add('hide');
+	overlay.classList.remove('show');
+	overlay.classList.add('hide');
+
+	// 动画完成后彻底隐藏
+	dialog.addEventListener('animationend', function handleAnimationEnd(event) {
+		if (event.animationName === 'slide-out') {
+			dialog.classList.add('hidden');
+			dialog.style.opacity = 0;
+		}
+		dialog.removeEventListener('animationend', handleAnimationEnd);
+	});
+
+	overlay.addEventListener('animationend', function handleOverlayAnimationEnd(event) {
+		if (event.animationName === 'fade-out') {
+			overlay.classList.add('hidden');
+		}
+		overlay.removeEventListener('animationend', handleOverlayAnimationEnd);
+	});
 }
 
 function setDeleteButtonStatus() {
@@ -117,7 +159,7 @@ function initReceive() {
 /**
  * 显示提示框
  */
-function showWarning(message) {
+function openWarning(message) {
 	const messageBox = $('#message-box');
 	const overlay = $('#overlay');
 	const msg = $('.message-box-body p');

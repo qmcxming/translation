@@ -8,7 +8,6 @@ const { translate, getLanguagePair } = require('../translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('../settings');
 const { getCacheUrl } = require('../cache');
 const { getMapping } = require('./wordmp');
-const tts = new EdgeTTS();
 
 const staticPath = path.join(__dirname, 'static');
 
@@ -472,6 +471,7 @@ async function getAudio(data, ft) {
 			fs.unlinkSync(filePath);
 		}
 	});
+	const tts = new EdgeTTS();
 	try {
 		await tts.ttsPromise(data, audioUrl).then(() => {
 			console.log('tts成功')
