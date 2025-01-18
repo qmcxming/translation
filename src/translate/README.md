@@ -69,3 +69,28 @@
 思路：直接调用翻译引擎接口，获取文本语种
 
 5. 谷歌翻译原文数据处理抽离出来作为单独的工具js文件 g-utils.js 【√】
+5. TTS引擎：Edge TTS
+
+解决方案：
+
+(1) [SchneeHertz/node-edge-tts](https://github.com/SchneeHertz/node-edge-tts)：此方案存在缺陷，接口似乎存在bug，有时会出现音频无法返回的问题。
+
+(2) [wxxxcxx/ms-ra-forwarder: 免费的在线文本转语音API](https://github.com/wxxxcxx/ms-ra-forwarder)：暂未尝试，不过在utools中的一些翻译插件均是使用该方案，总体而言，还是完美的，部分细节需要稍作处理。
+
+https://microsoft-tts.supercopilot.top/
+
+- 根据语种的不同，自动使用对应的语言朗读
+- 中英文可以使用 zh-CN-XiaoyiNeural
+- 请求路径：/api/ra
+- 请求方法：POST
+- Content-Type：text/plain
+- 声音列表获取：https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/voices/list?trustedclienttoken=6A5AA1D4EAFF4E9FB37E23D68491D6F4
+
+```xml
+<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
+  <voice name="zh-CN-XiaoyiNeural">
+    如果喜欢这个项目的话请点个 Star 吧。
+  </voice>
+</speak>
+```
+
