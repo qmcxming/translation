@@ -75,6 +75,11 @@ async function alibabaTranslate(text, appId, secretKey, version = 'general', sce
 		'x-acs-version': '2019-01-02',
 	};
 
+	const lan = await getDetectLanguage(text).catch(() => { from = 'auto' });
+	if(lan) {
+		from = lan;
+	}
+
 	try {
 		const res = await send(url, data, null, headers);
 		if(res.Code !== '200') return Promise.reject(new ErrorMessage('alibaba', res.Message));
@@ -92,6 +97,13 @@ async function alibabaTranslate(text, appId, secretKey, version = 'general', sce
 		console.log(e);
 		return Promise.reject(new ErrorMessage('alibaba', errorCode[e.response.data.Code]));
 	}
+}
+
+async function getDetectLanguage(text) {
+	return fetch('https://translate.alibaba.com/trans/GetDetectLanguage.do?srcData=' + text)
+	.then(res => res.json())
+	.then(res => res.renognize)
+	.catch(() => 'auto');// 可能后续接口会失效，所以直接返回auto
 }
 
 /**
