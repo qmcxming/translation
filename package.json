@@ -3,7 +3,7 @@
 	"name": "translation",
 	"description": "HBuilderX翻译插件，集成多个翻译引擎(百度翻译、腾讯翻译、阿里翻译、谷歌翻译)，并引入测试性功能语音朗读。",
 	"displayName": "翻译插件",
-	"version": "1.5.2",
+	"version": "1.5.3",
 	"publisher": "青明尘下",
 	"engines": {
 		"HBuilderX": "^3.8.5"
@@ -13,7 +13,7 @@
 	],
 	"main": "./extension",
 	"activationEvents": [
-		"onCommand:extension.translation"
+		"onCommand:qmcx.translation"
 	],
 	"contributes": {
 		"configuration": {
@@ -155,36 +155,36 @@
 		},
 		"commands": [
 			{
-				"command": "extension.translation",
+				"command": "qmcx.translation",
 				"title": "翻译"
 			},
 			{
-				"command": "extension.translationDialog",
+				"command": "qmcx.translationDialog",
 				"title": "打开翻译对话框"
 			},
 			{
-				"command": "extension.translationReplace",
+				"command": "qmcx.translationReplace",
 				"title": "翻译替换"
 			},
 			{
-				"command": "extension.wordMapping",
+				"command": "qmcx.wordMapping",
 				"title": "单词映射"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
-					"command": "extension.translation",
+					"command": "qmcx.translation",
 					"group": "z_commands",
 					"when": "editorHasSelection"
 				},
 				{
-					"command": "extension.translationReplace",
+					"command": "qmcx.translationReplace",
 					"group": "z_commands",
 					"when": "editorHasSelection"
 				},
 				{
-					"command": "extension.translationDialog",
+					"command": "qmcx.translationDialog",
 					"group": "z_commands",
 					"when": "editorTextFocus"
 				},
@@ -199,26 +199,26 @@
 					"group": "ext_settings"
 			   },
 			   {
-					"command": "extension.wordMapping",
+					"command": "qmcx.wordMapping",
 					"group": "translation@1"
 			   }
 			]
 		},
 		"keybindings": [
 			{
-				"command": "extension.translation",
+				"command": "qmcx.translation",
 				"key": "Ctrl+Shift+Y",
 				"when": "editorHasSelection",
 				"macosx": "command+Shift+Y"
 			},
 			{
-				"command": "extension.translationDialog",
+				"command": "qmcx.translationDialog",
 				"key": "Ctrl+Shift+O",
 				"when": "editorTextFocus",
 				"macosx": "command+Shift+O"
 			},
 			{
-				"command": "extension.translationReplace",
+				"command": "qmcx.translationReplace",
 				"key": "Ctrl+Shift+X",
 				"when": "editorTextFocus",
 				"macosx": "command+Shift+X"

@@ -48,7 +48,7 @@ const myStatusBarItem = hx.window.createStatusBarItem(
 	hx.StatusBarAlignment.Right,
 	100,
 );
-myStatusBarItem.command = 'extension.translationDialog';
+myStatusBarItem.command = 'qmcx.translationDialog';
 
 /**
  * 设置翻译状态栏元素

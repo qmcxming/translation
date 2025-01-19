@@ -4,16 +4,16 @@ const { translation, showTranslationDialog, setTranslationStatusBar, clearTransl
 //该方法将在插件激活的时候调用
 function activate(context) {
 	setTranslationStatusBar();
-	let disposable = hx.commands.registerCommand('extension.translation', () => {
+	let disposable = hx.commands.registerCommand('qmcx.translation', () => {
 		translation();
 	});
-	const translationDialog = hx.commands.registerCommand('extension.translationDialog', () => {
+	const translationDialog = hx.commands.registerCommand('qmcx.translationDialog', () => {
 		showTranslationDialog();
 	});
-	const translationReplace = hx.commands.registerCommand('extension.translationReplace', () => {
+	const translationReplace = hx.commands.registerCommand('qmcx.translationReplace', () => {
 		showTranslationReplace();
 	});
-	const wordMapping = hx.commands.registerCommand('extension.wordMapping', () => {
+	const wordMapping = hx.commands.registerCommand('qmcx.wordMapping', () => {
 		showWordMappingDialog();
 	})
 	//订阅销毁钩子，插件禁用的时候，自动注销该command。
