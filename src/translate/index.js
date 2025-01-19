@@ -3,6 +3,7 @@ const googleTranslate = require('./google');
 const tencentTranslate = require('./tencent');
 const alibabaTranslate = require('./alibaba');
 const { translationEngines, detectLanguage, getLanguagePair, ErrorMessage } = require('./request');
+const voiceList = require('./voices.json');
 
 /**
  * 一个简单的翻译api集成[百度翻译、腾讯翻译、阿里翻译]
@@ -64,6 +65,54 @@ function validate(text, appId, secretKey, engine, url) {
 	return Promise.resolve();
 }
 
+function createSSML(text, voiceName) {
+	text = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\'', '&apos;').replaceAll('"', '&quot;');
+	let ssml = '\
+		<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US">\
+			<voice name="'+ voiceName + '">\
+					<prosody rate="0%" pitch="0%">\
+							'+ text + '\
+					</prosody >\
+			</voice >\
+		</speak > '
+	return ssml;
+}
+
+/**
+ * 获取音频数据
+ * @param {string} text 文本
+ * @param {string} language 语种 
+ */
+async function audio(text, language) {
+	if(isEmpty(text)) return Promise.reject(new ErrorMessage('音频数据', '文本不能为空'));
+	if(isEmpty(language)) return Promise.reject(new ErrorMessage('音频数据', '语种不能为空'));
+	let voiceName = '';
+	voiceList.forEach(voice => {
+		if(voice.codes.includes(language)) {
+			voiceName = voice.name;
+		}
+	})
+	if(isEmpty(voiceName)) {
+		return Promise.reject(new ErrorMessage('音频数据', '没有该语音包，可以尝试切换语种，再次播放哦'));
+	}
+	let ssml = createSSML(text, voiceName);
+	const response = await fetch('https://microsoft-tts.supercopilot.top/api/ra', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'text/plain',
+			'Format': 'audio-24khz-48kbitrate-mono-mp3'
+		},
+		body: ssml
+	})
+	if (response.status == 200) {
+		return response.arrayBuffer();
+	} else if (response.status == 401) {
+		return Promise.reject(new ErrorMessage('音频数据', '无效的密钥'));
+	} else {
+		return response.text().then(text => Promise.reject(new ErrorMessage('音频数据', text)));
+	}
+}
+
 /**
  * 检查字符串是否为空
  * @param {string} str 要检查的字符串
@@ -77,5 +126,6 @@ function isEmpty(str) {
 module.exports = {
 	translate,
 	detectLanguage,
-	getLanguagePair
+	getLanguagePair,
+	audio
 }

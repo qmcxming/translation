@@ -63,15 +63,10 @@ function initReceive() {
 			playSound(audio, ft);
 			return;
 		}
-		const fromSound = $('#fromSound');
-		const toSound = $('#toSound');
 		const result = $('#result');
 		// 回显
 		if (content) {
 			$('#text').value = content;
-			// to音频置为可使用
-			fromSound.style.pointerEvents = 'auto';
-			fromSound.style.opacity = 1;
 			setSelectOption(from, to).then(() => {
 				console.log('选中完成，执行下面的代码');
 				toTranslate();
@@ -80,21 +75,22 @@ function initReceive() {
 		}
 		if (error) {
 			result.value = '';
+			reset();
 			return showToast(error);
 		};
+		soundBtnEnabled();
 		result.value = data.dst;
-		// to音频置为可使用
-		toSound.style.pointerEvents = 'auto';
-		toSound.style.opacity = 1;
-		// 重置音频
-		fromSound.setAttribute('url', '');
-		toSound.setAttribute('url', '');
 		// 设置auto模式下 检测的语种[阿里翻译不能使用, 所以多做了判断]
 		const detectLanguage = $('#detect-language');
 		if ((data.from !== 'auto') && ($('#selectedLabel1').getAttribute('data-value') === 'auto')) {
-			detectLanguage.textContent = options.find(item => item.code === data.from).name;
+			const ops = options.find(item => item.code === data.from);
+			detectLanguage.textContent = ops.name;
+			detectLanguage.setAttribute('data-value', ops.code);
 		} else {
 			detectLanguage.textContent = '';
+			detectLanguage.setAttribute('data-value', '');
+			const fromSound = $('#fromSound');
+			fromSound.style.pointerEvents = 'none';fromSound.style.opacity = 0.5;
 		}
 		translationData = data;
 		// 谷歌翻译特有的功能
@@ -102,6 +98,18 @@ function initReceive() {
 			googleUniqueFe(data);
 		}
 	});
+}
+
+// 音频按钮可用
+function soundBtnEnabled() {
+	const fromSound = $('#fromSound');
+	const toSound = $('#toSound');
+	// 音频置为可使用
+	fromSound.style.pointerEvents = 'auto';fromSound.style.opacity = 1;
+	toSound.style.pointerEvents = 'auto';toSound.style.opacity = 1;
+	// 重置音频
+	fromSound.setAttribute('url', '');
+	toSound.setAttribute('url', '');
 }
 
 /**
@@ -188,9 +196,13 @@ function playSound(audio, ft) {
 		// 数据格式：{ command: "getAudio", data: text, ft: ft }
 		loadingStatus(audio, true);
 		const text = ft === 'from' ? $('#text').value : $('#result').value;
+		const fromSelect = $('#selectedLabel1').getAttribute('data-value');
+		const language = ft === 'from' ? 
+			(fromSelect === 'auto' ? $('#detect-language').getAttribute('data-value') : fromSelect) : 
+			$('#selectedLabel2').getAttribute('data-value');
 		// 没有音频URL时不继续执行
 		$('#message').textContent = '正在获取音频...';
-		hbuilderx.postMessage({ command: 'getAudio', data: text, ft: ft })
+		hbuilderx.postMessage({ command: 'getAudio', data: text, ft: ft, language: language})
 		return;
 	}
 
@@ -264,13 +276,13 @@ function inputChange(textarea, ft) {
 	// 输入框的文本变化，就清理掉之前的音频
 	sound.setAttribute('url', '');
 	// 文本框为空时，禁用按钮
-	if (textarea.value.length === 0) {
-		sound.style.pointerEvents = 'none';
-		sound.style.opacity = 0.5;
-	} else {
-		sound.style.pointerEvents = 'auto';
-		sound.style.opacity = 1;
-	}
+	// if (textarea.value.length === 0) {
+	// 	sound.style.pointerEvents = 'none';
+	// 	sound.style.opacity = 0.5;
+	// } else {
+	// 	sound.style.pointerEvents = 'auto';
+	// 	sound.style.opacity = 1;
+	// }
 }
 
 function reset() {
@@ -293,8 +305,5 @@ function reset() {
 		phoneticEl.textContent = '';
 	});
 	// 音频置空
-	audio1 = null;
-	audio2 = null;
-	audioElement1 = null;
-	audioElement2 = null;
+	audio1 = null;audio2 = null;audioElement1 = null;audioElement2 = null;
 }

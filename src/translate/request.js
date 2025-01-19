@@ -4,7 +4,7 @@ const qs = require('qs');
 class ErrorMessage {
 	/**
 	 * 统一错误提示
-	 * @param {string} name - 翻译引擎名称
+	 * @param {string} name - 翻译引擎名称或错误名称
 	 * @param {string} error - 错误信息
 	 */
 	constructor(name, error) {

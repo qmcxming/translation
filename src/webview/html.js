@@ -2,9 +2,9 @@ const hx = require("hbuilderx");
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const { EdgeTTS } = require('node-edge-tts');
+// const { EdgeTTS } = require('node-edge-tts');
 
-const { translate, getLanguagePair } = require('../translate');
+const { translate, getLanguagePair, audio } = require('../translate');
 const { getTranslationEngine, getSecret, getGoogleServerUrl, getAlibabaVS } = require('../settings');
 const { getCacheUrl } = require('../cache');
 const { getMapping } = require('./wordmp');
@@ -182,7 +182,7 @@ function showTranslationDialog() {
 			openLink(msg.engine, msg.text);
 		}
 		if (msg.command === 'getAudio') {
-			getAudio(msg.data, msg.ft).then(res => {
+			getAudio(msg.data, msg.language).then(res => {
 				console.log(res);
 				webview.postMessage({ data: res, ft: msg.ft });
 			}).catch(e => {
@@ -208,11 +208,11 @@ function generateMD5(input) {
 
 // TODO node-edge-tts 存在bug，有时会出现音频无法返回的问题
 // 替代方案 https://github.com/wxxxcxx/ms-ra-forwarder
-async function getAudio(data, ft) {
+async function getAudio(data, language) {
 	const timestamp = Date.now();
 	const audioCacheDir = getCacheUrl('audio');
 	// 缓存，减少请求次数
-	let audioUrl = path.join(audioCacheDir, `${generateMD5(data)}.mp3`)
+	let audioUrl = path.join(audioCacheDir, `${generateMD5(data + language)}.mp3`)
 	if (fs.existsSync(audioUrl)) {
 		console.log('使用缓存audio咯');
 		return audioUrl;
@@ -228,14 +228,23 @@ async function getAudio(data, ft) {
 			fs.unlinkSync(filePath);
 		}
 	});
-	const tts = new EdgeTTS();
+	// const tts = new EdgeTTS();
+	// try {
+	// 	await tts.ttsPromise(data, audioUrl).then(() => {
+	// 		console.log('tts成功')
+	// 	})
+	// } catch(e){
+	// 	return e;
+	// }
 	try {
-		await tts.ttsPromise(data, audioUrl).then(() => {
-			console.log('tts成功')
-		})
-	} catch(e){
-		return e;
+		const arrayBuffer = await audio(data, language);
+		const buffer = Buffer.from(arrayBuffer);
+		fs.writeFileSync(audioUrl, buffer);
+	}catch(e){
+		console.log(e);
+		return Promise.reject(e);
 	}
+	
 	return audioUrl;
 }
 

@@ -1,6 +1,6 @@
 # 翻译优化
 
-1. 主函数名变更为 translate 新增参数
+## 1、主函数名变更为 translate 新增参数
 
 - text：待翻译文本
 
@@ -14,7 +14,7 @@
 - version：翻译版本(仅阿里翻译支持)
 - scene：翻译场景(仅阿里翻译支持)
 
-2. 统一返回结果以及错误 【√】
+## 2、统一返回结果以及错误 【√】
 
 **返回结果**
 
@@ -60,16 +60,19 @@
 }
 ```
 
-3. 其他翻译引擎函数 【√】
+## 3、其他翻译引擎函数 【√】
 
 函数名更改为xxTranslate，如googleTranslate、baiduTranslate...
 
-4. 完善检测语种 detect
+## 4、完善检测语种 detect
 
 思路：直接调用翻译引擎接口，获取文本语种
 
-5. 谷歌翻译原文数据处理抽离出来作为单独的工具js文件 g-utils.js 【√】
-5. TTS引擎：Edge TTS
+## 5、谷歌翻译原文数据处理抽离【√】
+
+抽离出来作为单独的工具js文件 g-utils.js 
+
+## 6、TTS引擎：Edge TTS
 
 解决方案：
 
@@ -86,11 +89,25 @@ https://microsoft-tts.supercopilot.top/
 - Content-Type：text/plain
 - 声音列表获取：https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/voices/list?trustedclienttoken=6A5AA1D4EAFF4E9FB37E23D68491D6F4
 
-```xml
+```js
+const name = 'zh-CN-XiaoyiNeural';
+const text = '如果喜欢这个项目的话请点个 Star 吧。';
+const ssml = `
 <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
-  <voice name="zh-CN-XiaoyiNeural">
-    如果喜欢这个项目的话请点个 Star 吧。
+  <voice name="${name}">
+    ${text}
   </voice>
-</speak>
+</speak>`;
 ```
 
+**聚合翻译语音列表设计：**
+
+对应的翻译语种传递进来，从第一个元素开始，匹配`codes`【includes】，匹配通过，直接使用当前对元素，否则继续向下查找。
+
+详细可见，`src/translate/voices.json`文件
+
+**错误提示：**
+
+(1) auto 检测出来的语种传入【比如正常语种是en，检测后变成了xx语种】，本地却没有收录该语种对应的语言name：没有该语音包，可以尝试切换语种，再次播放哦。
+
+【这种情况下，缓存的md5加密文件名可能需要变更 → md5(文本 + 语种)】
