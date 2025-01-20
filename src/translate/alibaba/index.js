@@ -75,9 +75,10 @@ async function alibabaTranslate(text, appId, secretKey, version = 'general', sce
 		'x-acs-version': '2019-01-02',
 	};
 
-	const lan = await getDetectLanguage(text).catch(() => { from = 'auto' });
-	if(lan) {
-		from = lan;
+	// 自动检测时，再去检测语言
+	if (from === 'auto') {
+		const lan = await getDetectLanguage(text).catch(() => { from = 'auto' });
+		if(lan) from = lan;
 	}
 
 	try {
@@ -100,7 +101,7 @@ async function alibabaTranslate(text, appId, secretKey, version = 'general', sce
 }
 
 async function getDetectLanguage(text) {
-	return fetch('https://translate.alibaba.com/trans/GetDetectLanguage.do?srcData=' + text)
+	return fetch('https://translat.alibaba.com/trans/GetDetectLanguage.do?srcData=' + text)
 	.then(res => res.json())
 	.then(res => res.renognize)
 	.catch(() => 'auto');// 可能后续接口会失效，所以直接返回auto

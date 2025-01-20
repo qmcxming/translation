@@ -80,7 +80,8 @@ function initReceive() {
 		};
 		soundBtnEnabled();
 		result.value = data.dst;
-		// 设置auto模式下 检测的语种[阿里翻译不能使用, 所以多做了判断]
+		// 设置auto模式下 检测的语种
+		// [v1.5.3后阿里翻译可以使用,但不保证后续阿里翻译检测语种接口是否失效， 所以多做了判断]
 		const detectLanguage = $('#detect-language');
 		if ((data.from !== 'auto') && ($('#selectedLabel1').getAttribute('data-value') === 'auto')) {
 			const ops = options.find(item => item.code === data.from);
@@ -89,6 +90,9 @@ function initReceive() {
 		} else {
 			detectLanguage.textContent = '';
 			detectLanguage.setAttribute('data-value', '');
+		}
+		// 若阿里翻译语种检测接口失效，将返回的from为auto，禁用发音按钮
+		if((data.from === 'auto') && (data.name === 'alibaba')) {
 			const fromSound = $('#fromSound');
 			fromSound.style.pointerEvents = 'none';fromSound.style.opacity = 0.5;
 		}
