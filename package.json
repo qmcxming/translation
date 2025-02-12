@@ -3,7 +3,7 @@
 	"name": "translation-plugin",
 	"description": "HBuilderX翻译插件，集成多个翻译引擎(百度翻译、腾讯翻译、阿里翻译、谷歌翻译)，并引入测试性功能语音朗读。",
 	"displayName": "翻译插件",
-	"version": "1.5.4",
+	"version": "1.5.5",
 	"publisher": "青明尘下",
 	"engines": {
 		"HBuilderX": "^3.8.5"
@@ -53,8 +53,8 @@
 				},
 				"translation.googleSecret": {
 					"type": "string",
-					"default": "",
-					"description": "谷歌翻译 服务器配置 例如 https://translate.google.com <a style=\"color: '#3574F0'\" href=\"https://qmcx.rth1.xyz\">测速小工具</a>"
+					"default": "https://gtranslate.darkluna.top",
+					"description": "谷歌翻译 服务器配置 例如 https://translate.google.com"
 				},
 				"translation.time": {
 					"type": "number",
