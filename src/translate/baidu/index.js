@@ -50,4 +50,12 @@ async function baiduTranslate(text, appId, secretKey, from, to, original) {
 	return response;
 }
 
-module.exports = baiduTranslate;
+async function baiduLangDetect(text, appId, secretKey) {
+	const res = await baiduTranslate(text, appId, secretKey, 'auto', 'zh', false);
+	return res.from;
+}
+
+module.exports = {
+	baiduTranslate,
+	baiduLangDetect
+};

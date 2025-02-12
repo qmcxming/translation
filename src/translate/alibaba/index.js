@@ -100,6 +100,11 @@ async function alibabaTranslate(text, appId, secretKey, version = 'general', sce
 	}
 }
 
+async function alibabaLangDetect(text, appId, secretKey) {
+	const res = await alibabaTranslate(text, appId, secretKey, 'general', 'general', 'auto', 'zh', false);
+	return res.from;
+}
+
 async function getDetectLanguage(text) {
 	return fetch('https://translat.alibaba.com/trans/GetDetectLanguage.do?srcData=' + text)
 	.then(res => res.json())
@@ -134,4 +139,7 @@ function HMACSha1(data, key) {
 	return Buffer.from(md5Hash, "hex").toString('base64');
 }
 
-module.exports = alibabaTranslate;
+module.exports = { 
+	alibabaTranslate,
+	alibabaLangDetect
+};

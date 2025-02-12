@@ -67,10 +67,7 @@ function initReceive() {
 		// 回显
 		if (content) {
 			$('#text').value = content;
-			setSelectOption(from, to).then(() => {
-				console.log('选中完成，执行下面的代码');
-				toTranslate();
-			});
+			toTranslate();
 			return;
 		}
 		if (error) {
@@ -135,17 +132,41 @@ function googleUniqueFe(data) {
 
 function toTranslate() {
 	const text = $('#text').value;
-	const from = $('#selectedLabel1').getAttribute('data-value');
-	const to = $('#selectedLabel2').getAttribute('data-value');
-	console.log(from, to);
 	if (isEmpty(text)) {
 		showToast('请输入要翻译的内容');
 		return;
 	};
-	$('#result').value = '正在翻译中...';
-	// 发送消息
-	hbuilderx.postMessage({ command: 'translation', data: text, from: from, to: to });
-	console.log(text);
+	const from = $('#selectedLabel1').getAttribute('data-value');
+	const to = autoChange(text, from, $('#selectedLabel2').getAttribute('data-value'), languageList);
+	console.log(from, to);
+	setSelectOption(from, to).then(() => {
+		$('#result').value = '正在翻译中...';
+		// 发送消息
+		hbuilderx.postMessage({ command: 'translation', data: text, from: from, to: to });
+		console.log(text);
+	});
+}
+
+/**
+ * 检测语言(是否为中文)
+ * @param {String} word 文本
+ */
+function detectLanguageZh(word) {
+	return /[\u4e00-\u9fa5]/gm.test(word);
+}
+
+// 一个简单的中英文语种自动切换
+const autoChange = (text, from, to, languages) => {
+  // 在语言表中，索引为1的是中文，索引为2的是英文
+  // 判断text是否为中文
+  if(detectLanguageZh(text) && to === languages[1].code && from !== 'wyw') {
+    return languages[2].code;
+  }
+  // 判断text是否为英文
+  if(!detectLanguageZh(text) && to === languages[2].code) {
+    return languages[1].code;
+  }
+  return to;
 }
 
 window.addEventListener("hbuilderxReady", initReceive);
@@ -300,11 +321,12 @@ function reset() {
 		const phoneticEl = document.getElementById(element.phoneticId);
 
 		el.setAttribute('url', '');
-		el.style.pointerEvents = 'none';
-		el.style.opacity = 0.5;
+		checkSoundStatus(el, false);
+		el.style.pointerEvents = 'auto';
+		el.style.opacity = 1;
 		// 清除图标旋转
 		el.style.animation = '';
-		el.setAttribute('src', defaultUrl.value + 'sound.svg');
+		// el.setAttribute('src', defaultUrl.value + 'sound.svg');
 		$('#message').textContent = '';// 清除加载信息
 		phoneticEl.textContent = '';
 	});

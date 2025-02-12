@@ -123,6 +123,11 @@ async function tencentTranslate(text, appId, secretKey, from, to, original) {
 	return response;
 }
 
+async function tencentLangDetect(text, appId, secretKey) {
+	const res = await tencentTranslate(text, appId, secretKey, 'auto', 'zh', false);
+	return res.from;
+}
+
 /**
  * 根据时间戳返回格式化的日期字符串。
  *
@@ -164,4 +169,7 @@ function sha256(message, secret = "", encoding) {
 	return hmac.update(message).digest(encoding)
 }
 
-module.exports = tencentTranslate
+module.exports = { 
+	tencentTranslate,
+	tencentLangDetect
+};

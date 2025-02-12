@@ -73,4 +73,12 @@ async function googleTranslate(text, url, from, to, original) {
 	return response;
 }
 
-module.exports = googleTranslate;
+async function googleLangDetect(text, url) {
+	const res = await googleTranslate(text, url, 'auto', 'zh', false);
+	return res.from;
+}
+
+module.exports = {
+	googleTranslate,
+	googleLangDetect
+};

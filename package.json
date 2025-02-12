@@ -1,6 +1,6 @@
 {
-	"id": "translation",
-	"name": "translation",
+	"id": "translation-plugin",
+	"name": "translation-plugin",
 	"description": "HBuilderX翻译插件，集成多个翻译引擎(百度翻译、腾讯翻译、阿里翻译、谷歌翻译)，并引入测试性功能语音朗读。",
 	"displayName": "翻译插件",
 	"version": "1.5.4",

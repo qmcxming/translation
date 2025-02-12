@@ -26,7 +26,7 @@ function showTranslationDialog() {
 			// 使用定时器解决webview页面载入无法接收问题
 			const { from, to } = getLanguagePair(text);
 			setTimeout(() => {
-				webview.postMessage({ content: text, from: from, to: to });
+				webview.postMessage({ content: text, from: 'auto', to: to });
 			}, 500);
 		}
 	})
@@ -237,7 +237,7 @@ async function getAudio(data, language) {
 	// 	return e;
 	// }
 	try {
-		const arrayBuffer = await audio(data, language);
+		const arrayBuffer = await audio(data, language, null, 'ctrl-jntm');
 		const buffer = Buffer.from(arrayBuffer);
 		fs.writeFileSync(audioUrl, buffer);
 	}catch(e){
