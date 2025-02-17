@@ -72,7 +72,7 @@ function initReceive() {
 		}
 		if (error) {
 			result.value = '';
-			reset();
+			reset(true);
 			return showToast(error);
 		};
 		soundBtnEnabled();
@@ -301,16 +301,16 @@ function inputChange(textarea, ft) {
 	// 输入框的文本变化，就清理掉之前的音频
 	sound.setAttribute('url', '');
 	// 文本框为空时，禁用按钮
-	// if (textarea.value.length === 0) {
-	// 	sound.style.pointerEvents = 'none';
-	// 	sound.style.opacity = 0.5;
-	// } else {
-	// 	sound.style.pointerEvents = 'auto';
-	// 	sound.style.opacity = 1;
-	// }
+	if (textarea.value.length === 0) {
+		sound.style.pointerEvents = 'none';
+		sound.style.opacity = 0.5;
+	} else {
+		sound.style.pointerEvents = 'auto';
+		sound.style.opacity = 1;
+	}
 }
 
-function reset() {
+function reset(flag = false) {
 	const elements = [
 		{ id: 'fromSound', phoneticId: 'from-phonetic' },
 		{ id: 'toSound', phoneticId: 'to-phonetic' }
@@ -322,8 +322,8 @@ function reset() {
 
 		el.setAttribute('url', '');
 		checkSoundStatus(el, false);
-		el.style.pointerEvents = 'auto';
-		el.style.opacity = 1;
+		el.style.pointerEvents = flag ? 'auto' : 'none';
+		el.style.opacity = flag ? 1 : 0.5;
 		// 清除图标旋转
 		el.style.animation = '';
 		// el.setAttribute('src', defaultUrl.value + 'sound.svg');
