@@ -16,20 +16,6 @@ const staticPath = path.join(__dirname, 'static');
  */
 function showTranslationDialog() {
 	const translationEngine = getTranslationEngine();
-	const editorPromise = hx.window.getActiveTextEditor();
-	editorPromise.then(editor => {
-		const selection = editor.selection;
-		// 获取文本
-		const text = editor.document.getText(selection);
-		// 有选中文本时，再去发送消息给webview
-		if (text.trim() !== '') {
-			// 使用定时器解决webview页面载入无法接收问题
-			const { from, to } = getLanguagePair(text);
-			setTimeout(() => {
-				webview.postMessage({ content: text, from: 'auto', to: to });
-			}, 500);
-		}
-	})
 	let te;
 	if (translationEngine === 'Alibaba') {
 		const { version } = getAlibabaVS();
@@ -150,6 +136,21 @@ function showTranslationDialog() {
 		</body>
 		
 		</html>`;
+	const editorPromise = hx.window.getActiveTextEditor();
+	editorPromise.then(editor => {
+		const selection = editor.selection;
+		// 获取文本
+		const text = editor.document.getText(selection);
+		// 有选中文本时，再去发送消息给webview
+		if (text.trim() !== '') {
+			// 使用定时器解决webview页面载入无法接收问题
+			const { from, to } = getLanguagePair(text);
+			setTimeout(() => {
+				console.log('text', text);
+				webview.postMessage({ content: text, from: 'auto', to: to });
+			}, 500);
+		}
+	})
 	webview.onDidReceiveMessage((msg) => {
 		console.log(msg);
 		if (msg.command == 'translation') {
@@ -171,7 +172,9 @@ function showTranslationDialog() {
 				const mp = getMapping(data);
 				if (mp) {
 					res.dst = mp;
-					res.detail.toPhonetic = '';
+					if(res.detail) {
+						res.detail.toPhonetic = '';
+					}
 				};
 				webview.postMessage({ data: res });
 			}).catch(e => {

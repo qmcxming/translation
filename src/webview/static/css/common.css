@@ -3,13 +3,13 @@
 	/* 滚动条宽度 */
 	--scrollbar-width: 12px;
 	/* 滚动条滑块颜色 */
-	--scrollbar-thumb-color: #888;
+	--scrollbar-thumb-color: #E5E6EB;
 	/* 滚动条轨道颜色 */
-	--scrollbar-track-color: #f1f1f1;
+	--scrollbar-track-color: #ffffff;
 	/* 滚动条滑块圆角 */
 	--scrollbar-thumb-radius: 6px;
 	/* 滚动条滑块边框 */
-	--scrollbar-thumb-border: 3px solid #f1f1f1;
+	--scrollbar-thumb-border: 3px solid #ffffff;
 }
 
 /* 滚动条轨道 */
@@ -32,7 +32,7 @@
 
 /* 鼠标悬停在滚动条上时的滑块样式 */
 ::-webkit-scrollbar-thumb:hover {
-	background-color: #555;
+	background-color: #C9CDD4;
 }
 
 /* Firefox 滚动条样式 */
