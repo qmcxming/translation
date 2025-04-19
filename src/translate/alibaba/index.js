@@ -106,7 +106,7 @@ async function alibabaLangDetect(text, appId, secretKey) {
 }
 
 async function getDetectLanguage(text) {
-	return fetch('https://translat.alibaba.com/trans/GetDetectLanguage.do?srcData=' + text)
+	return fetch('https://translate.alibaba.com/trans/GetDetectLanguage.do?srcData=' + text)
 	.then(res => res.json())
 	.then(res => res.renognize)
 	.catch(() => 'auto');// 可能后续接口会失效，所以直接返回auto

@@ -28,7 +28,7 @@ function accordionUpdate() {
 		}
 		document.getElementById('category-list').innerHTML = str;
 		document.getElementById('example').innerHTML = exampleList.length > 0 ? exampleList
-			.map(item => '<p class=\"example-item\">' + item + '</p>')
+			.map(item => '<p class=\"example-item\">📚 ' + item + '</p>')
 			.join('') : '';
 		const exampleContainer = document.getElementById('example-container');
 		document.getElementById('no-data').style.display =
