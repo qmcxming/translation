@@ -155,10 +155,9 @@ function showTranslationReplace() {
 			}
 		}
 		if (detectLanguage(text)) { // 中文 -> 翻译 -> 转换
-			text = getMapping(text);
-			if(!text) {
-				text = await getTranslationContent(text);
-			}
+			const mappingText = getMapping(text);
+			text = mappingText ? mappingText : text;
+			text = await getTranslationContent(text);
 		}
 		const items = template.map(item => ({
 			label: item.label,
