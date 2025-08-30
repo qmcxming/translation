@@ -1,7 +1,7 @@
 const { baiduTranslate, baiduLangDetect } = require('./baidu');
-const { googleTranslate, googleLangDetect} = require('./google');
+const { googleTranslate, googleLangDetect } = require('./google');
 const { tencentTranslate, tencentLangDetect } = require('./tencent');
-const { alibabaTranslate, alibabaLangDetect} = require('./alibaba');
+const { alibabaTranslate, alibabaLangDetect } = require('./alibaba');
 const { translationEngines, detectLanguage, getLanguagePair, ErrorMessage } = require('./request');
 const voiceList = require('./voices.json');
 
@@ -28,7 +28,8 @@ const voiceList = require('./voices.json');
  * @param {boolean} [original=false] 是否返回原文
  * @returns {Promise}
  */
-async function translate(text, engine = 'google', appId, secretKey, from = 'auto', to, url = translationEngines['google'], version =
+async function translate(text, engine = 'google', appId, secretKey, from = 'auto', to, url = translationEngines[
+		'google'], version =
 	'general', scene = 'general', original = false) {
 	// 转换小写
 	engine = engine.toLocaleLowerCase();
@@ -75,7 +76,7 @@ async function detect(text, engine = 'google', appId, secretKey, url = translati
 		default:
 			return Promise.reject(new ErrorMessage(engine, '不支持的翻译引擎'));
 	}
-	
+
 }
 
 /**
@@ -89,7 +90,7 @@ async function detect(text, engine = 'google', appId, secretKey, url = translati
 function validate(text, appId, secretKey, engine, url) {
 	if (isEmpty(text)) return Promise.reject(new ErrorMessage(engine, '翻译内容不能为空'));
 	if (engine !== 'google') {
-		if (isEmpty(appId) || isEmpty(secretKey)) 
+		if (isEmpty(appId) || isEmpty(secretKey))
 			return Promise.reject(new ErrorMessage(engine, '应用ID 和密钥不能为空'));
 	} else {
 		// 谷歌翻译适用
@@ -99,12 +100,13 @@ function validate(text, appId, secretKey, engine, url) {
 }
 
 function createSSML(text, voiceName) {
-	text = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\'', '&apos;').replaceAll('"', '&quot;');
+	text = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\'', '&apos;')
+		.replaceAll('"', '&quot;');
 	let ssml = '\
 		<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US">\
-			<voice name="'+ voiceName + '">\
+			<voice name="' + voiceName + '">\
 					<prosody rate="0%" pitch="0%">\
-							'+ text + '\
+							' + text + '\
 					</prosody >\
 			</voice >\
 		</speak > '
@@ -117,33 +119,38 @@ function createSSML(text, voiceName) {
  * @param {string} language 语种 
  */
 async function audio(text, language, url, token) {
-	if(isEmpty(text)) return Promise.reject(new ErrorMessage('音频数据', '文本不能为空'));
-	if(isEmpty(language)) return Promise.reject(new ErrorMessage('音频数据', '语种不能为空'));
+	if (isEmpty(text)) return Promise.reject(new ErrorMessage('音频数据', '文本不能为空'));
+	if (isEmpty(language)) return Promise.reject(new ErrorMessage('音频数据', '语种不能为空'));
 	url = isEmpty(url) ? translationEngines['edgeTTS'] : url;
 	let voiceName = '';
 	voiceList.forEach(voice => {
-		if(voice.codes.includes(language)) {
+		if (voice.codes.includes(language)) {
 			voiceName = voice.name;
 		}
 	})
-	if(isEmpty(voiceName)) {
+	if (isEmpty(voiceName)) {
 		return Promise.reject(new ErrorMessage('音频数据', '没有该语音包，可以尝试切换语种，再次播放哦'));
 	}
-	let ssml = createSSML(text, voiceName);
+	let temp = voiceName.split('-');
+
 	url = new URL(url);
-	url.pathname = '/api/ra';
-	let headers = {
-		'Content-Type': 'text/plain',
-		'Format': 'audio-24khz-48kbitrate-mono-mp3'
-	}
+	url.pathname = '/api/text-to-speech';
+	let headers = {};
 	if (token) {
 		headers['Authorization'] = 'Bearer ' + token;
 	}
 	try {
+		const params = new URLSearchParams({
+			voice: `Microsoft Server Speech Text to Speech Voice (${temp[0] + '-' + temp[1]}, ${temp[2]})`,
+			volume: 0,
+			rate: 0,
+			pitch: 0,
+			text: text
+		})
+		url.search = params;
 		const response = await fetch(url, {
-			method: 'POST',
+			method: 'GET',
 			headers: headers,
-			body: ssml
 		})
 		if (response.status == 200) {
 			return response.arrayBuffer();
@@ -152,8 +159,8 @@ async function audio(text, language, url, token) {
 		} else {
 			return response.text().then(text => Promise.reject(new ErrorMessage('音频数据', text)));
 		}
-	} catch(e) {
-		return Promise.reject(new ErrorMessage('音频数据','语音朗读失败：' + e.message));
+	} catch (e) {
+		return Promise.reject(new ErrorMessage('音频数据', '语音朗读失败：' + e.message));
 	}
 }
 
